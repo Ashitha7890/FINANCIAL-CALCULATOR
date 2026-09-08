@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multi-Sector Financing Appraisal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F1F4F8; --surface:#FFFFFF; --surface-2:#F7F9FC; --sunken:#E8EDF4;
+  --ink:#101722; --ink-2:#3E4A5C; --ink-3:#6B788C; --line:#D5DCE6; --line-2:#C0CAD8;
+  --accent:#24518F; --accent-soft:#E4EBF6; --accent-ink:#1B3E6E;
+  --ochre:#8E5F14; --ochre-soft:#FAF0DC; --ochre-line:#D9AE5C;
+  --pass:#14683F; --pass-soft:#DFF0E6; --pass-line:#8FC7A9;
+  --caution:#8A5605; --caution-soft:#FCEEDA; --caution-line:#E2B269;
+  --fail:#9E252A; --fail-soft:#FBE4E4; --fail-line:#E09A9C;
+  --shadow:0 1px 2px rgba(16,23,34,.05), 0 6px 20px -12px rgba(16,23,34,.28);
+  --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  --disp:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --body:'Source Sans 3','Helvetica Neue',Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ground:#0C1118; --surface:#141C27; --surface-2:#19222E; --sunken:#0A0F15;
+  --ink:#E8EDF4; --ink-2:#AEBACA; --ink-3:#7C8A9C; --line:#26313F; --line-2:#33404F;
+  --accent:#7FA9E8; --accent-soft:#1B2735; --accent-ink:#A9C6F2;
+  --ochre:#DDAE5B; --ochre-soft:#2A2114; --ochre-line:#6E5528;
+  --pass:#5FC08D; --pass-soft:#12241A; --pass-line:#2F5C42;
+  --caution:#E3AE55; --caution-soft:#2A2113; --caution-line:#6B5324;
+  --fail:#F08387; --fail-soft:#2B1517; --fail-line:#6E3134;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.8);
+}}
+:root[data-theme="dark"]{
+  --ground:#0C1118; --surface:#141C27; --surface-2:#19222E; --sunken:#0A0F15;
+  --ink:#E8EDF4; --ink-2:#AEBACA; --ink-3:#7C8A9C; --line:#26313F; --line-2:#33404F;
+  --accent:#7FA9E8; --accent-soft:#1B2735; --accent-ink:#A9C6F2;
+  --ochre:#DDAE5B; --ochre-soft:#2A2114; --ochre-line:#6E5528;
+  --pass:#5FC08D; --pass-soft:#12241A; --pass-line:#2F5C42;
+  --caution:#E3AE55; --caution-soft:#2A2113; --caution-line:#6B5324;
+  --fail:#F08387; --fail-soft:#2B1517; --fail-line:#6E3134;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+img{max-width:100%}
+[hidden]{display:none!important}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.disp{font-family:var(--disp);text-wrap:balance;margin:0}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:1420px;margin:0 auto;padding:0 20px 72px}
+
+/* ---------- masthead ---------- */
+.mast{border-bottom:1px solid var(--line);background:var(--surface);margin-bottom:22px}
+.mast-in{max-width:1420px;margin:0 auto;padding:22px 20px 20px;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;justify-content:space-between}
+.eyebrow{font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.mast h1{font-size:27px;font-weight:700;letter-spacing:-.015em;line-height:1.15}
+.mast p{margin:7px 0 0;color:var(--ink-2);max-width:60ch;font-size:14px}
+.mast-side{display:flex;gap:8px;align-items:center}
+.btn{font-family:var(--disp);font-size:12px;font-weight:600;letter-spacing:.02em;padding:8px 13px;border-radius:5px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink-2);cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---------- verdict ---------- */
+.verdict{position:sticky;top:0;z-index:6;border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:7px;background:var(--surface);
+  padding:16px 20px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;box-shadow:var(--shadow);margin-bottom:14px}
+.verdict.is-go{border-left-color:var(--pass);background:var(--pass-soft)}
+.verdict.is-cond{border-left-color:var(--caution);background:var(--caution-soft)}
+.verdict.is-no{border-left-color:var(--fail);background:var(--fail-soft)}
+.verdict.is-data{border-left-color:var(--accent);background:var(--accent-soft)}
+.verdict-l{min-width:0}
+.verdict-tag{font-family:var(--disp);font-size:22px;font-weight:700;letter-spacing:-.01em}
+.is-go .verdict-tag{color:var(--pass)} .is-cond .verdict-tag{color:var(--caution)}
+.is-no .verdict-tag{color:var(--fail)} .is-data .verdict-tag{color:var(--accent)}
+.verdict-why{margin-top:3px;color:var(--ink-2);font-size:14.5px}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px 5px 9px;font-size:12.5px;white-space:nowrap}
+.chip b{font-family:var(--disp);font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.d-pass{background:var(--pass)} .d-caution{background:var(--caution)} .d-fail{background:var(--fail)}
+
+/* ---------- layout ---------- */
+.cols{display:grid;grid-template-columns:352px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:1080px){.cols{grid-template-columns:1fr}}
+.rail{display:flex;flex-direction:column;gap:12px}
+.stack{display:flex;flex-direction:column;gap:18px;min-width:0}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:7px;box-shadow:var(--shadow);overflow:hidden}
+.phead{display:flex;align-items:baseline;gap:9px;padding:11px 15px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.phead h2{font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink)}
+.phead .sec{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:600}
+.phead .hint{margin-left:auto;font-size:11.5px;color:var(--ink-3);font-family:var(--disp);letter-spacing:.03em}
+.pbody{padding:13px 15px}
+.pnote{padding:9px 15px;background:var(--sunken);border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);font-style:italic}
+
+/* ---------- inputs ---------- */
+.field{display:grid;grid-template-columns:1fr 108px;gap:9px;align-items:center;padding:5px 0 5px 10px;border-left:2px solid var(--ochre-line);margin-bottom:3px}
+.field label{font-size:13px;color:var(--ink-2);line-height:1.3}
+.field .u{font-size:11px;color:var(--ink-3);display:block;font-family:var(--disp);letter-spacing:.03em}
+input[type=number],input[type=text],select{width:100%;font-family:var(--mono);font-size:13.5px;font-weight:500;text-align:right;
+  padding:6px 8px;border:1px solid var(--line-2);border-radius:4px;background:var(--ochre-soft);color:var(--ink)}
+select{text-align:left;font-family:var(--body)}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+input.bad{border-color:var(--fail);background:var(--fail-soft)}
+.slider{padding:7px 0 4px 10px;border-left:2px solid var(--ochre-line);margin-bottom:5px}
+.slider-top{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--ink-2)}
+.slider-top b{font-family:var(--mono);font-size:14px;color:var(--ochre);font-weight:600}
+input[type=range]{width:100%;margin:5px 0 0;accent-color:var(--accent)}
+.kyc{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.kyc:last-child{border-bottom:0}
+.kyc span{font-size:13px;color:var(--ink-2);line-height:1.3}
+.seg{display:flex;border:1px solid var(--line-2);border-radius:5px;overflow:hidden;flex:none}
+.seg button{font-family:var(--disp);font-size:11.5px;font-weight:600;padding:4px 11px;border:0;background:var(--surface);color:var(--ink-3);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+:root[data-theme="dark"] .seg button[aria-pressed="true"],
+:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{color:#0C1118}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+/* ---------- result rows ---------- */
+.chain{display:flex;flex-direction:column}
+.row{border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row-h{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:9px 15px;cursor:pointer;background:none;border:0;width:100%;text-align:left;font:inherit;color:inherit}
+.row-h:hover{background:var(--surface-2)}
+.row-h:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.row-l{font-size:13.5px;color:var(--ink-2);min-width:0}
+.row-v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14.5px;font-weight:500;white-space:nowrap}
+.row.key .row-l{color:var(--ink);font-weight:600}
+.row.key .row-v{font-size:17px;font-weight:600;color:var(--accent)}
+.row.key{background:var(--accent-soft)}
+.fx{font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:3px;padding:0 5px;line-height:16px;flex:none}
+.row-h[aria-expanded="true"] .fx{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.expl{padding:0 15px 13px 15px;background:var(--sunken);border-top:1px dashed var(--line)}
+.expl .lbl{font-family:var(--disp);font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin:11px 0 4px}
+.expl pre{margin:0;font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--accent-ink);white-space:pre-wrap;word-break:break-word}
+:root[data-theme="dark"] .expl pre,:root:not([data-theme="light"]) .expl pre{color:var(--accent)}
+.expl p{margin:0;font-size:13px;color:var(--ink-2);max-width:72ch}
+.tag{display:inline-block;font-family:var(--disp);font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 7px;border-radius:3px;border:1px solid;white-space:nowrap}
+.t-pass{color:var(--pass);background:var(--pass-soft);border-color:var(--pass-line)}
+.t-caution{color:var(--caution);background:var(--caution-soft);border-color:var(--caution-line)}
+.t-fail{color:var(--fail);background:var(--fail-soft);border-color:var(--fail-line)}
+.t-mute{color:var(--ink-3);background:var(--surface-2);border-color:var(--line)}
+
+/* ---------- split bar ---------- */
+.splitbar{display:flex;height:34px;border-radius:5px;overflow:hidden;border:1px solid var(--line-2);margin-bottom:11px}
+.splitbar div{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11.5px;font-weight:600;color:#fff;min-width:0;overflow:hidden;transition:flex-basis .25s ease}
+.sp-sub{background:var(--accent)} .sp-loan{background:var(--ochre)} .sp-ben{background:var(--ink-3)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2)}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px}
+
+/* ---------- table ---------- */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-family:var(--disp);font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);
+  text-align:right;padding:8px 12px;border-bottom:1px solid var(--line-2);white-space:nowrap;background:var(--surface-2)}
+th:first-child,td:first-child{text-align:left}
+th.l,td.l{text-align:left}
+td{padding:7px 12px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.l{font-family:var(--body)}
+tr.rec td{background:var(--accent-soft);font-weight:600}
+tr.over td:not(.l){color:var(--ink-3)}
+.mark{font-family:var(--disp);font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--accent)}
+
+/* ---------- checks ---------- */
+.checks{display:flex;flex-direction:column}
+.check{display:grid;grid-template-columns:78px 1fr;gap:12px;padding:9px 15px;border-bottom:1px solid var(--line);align-items:start}
+.check:last-child{border-bottom:0}
+.check .cl{font-size:13.5px;color:var(--ink);font-weight:600}
+.check .cd{font-size:12.5px;color:var(--ink-3);margin-top:1px}
+.subhead{padding:8px 15px;background:var(--sunken);border-bottom:1px solid var(--line);font-family:var(--disp);
+  font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2)}
+.subhead em{font-style:normal;color:var(--ink-3);font-weight:500;letter-spacing:.02em;text-transform:none;font-size:12px}
+
+svg{display:block;width:100%;height:auto}
+.footer{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);max-width:88ch}
+/* ---------- phones ---------- */
+@media (max-width:680px){
+  body{font-size:15px}
+  .wrap{padding:0 12px 56px}
+  .mast-in{padding:15px 12px 13px;gap:12px}
+  .mast h1{font-size:21px}
+  .mast p{font-size:13.5px;margin-top:6px}
+  .eyebrow{font-size:10px}
+  .mast-side{width:100%}
+  .mast-side .btn{flex:1;padding:10px 12px;font-size:12.5px}
+  .verdict{padding:12px 14px;gap:10px;top:0;border-radius:6px}
+  .verdict-tag{font-size:18px}
+  .verdict-why{font-size:13.5px;line-height:1.4}
+  .chips{gap:6px}
+  .chip{font-size:11.5px;padding:4px 10px 4px 8px}
+  .cols{gap:14px}
+  .stack{gap:14px}
+  .phead{padding:10px 13px;flex-wrap:wrap;gap:6px}
+  .phead .hint{font-size:11px;flex-basis:100%;margin-left:0}
+  .pbody{padding:11px 13px}
+  .pnote{padding:9px 13px}
+  /* touch targets and no iOS zoom-on-focus (needs >=16px) */
+  .field{grid-template-columns:1fr 122px;gap:10px;padding:7px 0 7px 10px}
+  .field label{font-size:13.5px}
+  input[type=number],input[type=text],select{font-size:16px;padding:10px}
+  .seg button{font-size:13.5px;padding:10px 16px}
+  .kyc{padding:9px 0;gap:12px}
+  .kyc span{font-size:13.5px}
+  input[type=range]{height:30px}
+  .slider{padding:9px 0 6px 10px}
+  .slider-top{font-size:13.5px}
+  .row-h{padding:12px 13px;gap:9px}
+  .row-l{font-size:13px}
+  .row-v{font-size:13.5px}
+  .row.key .row-v{font-size:15px}
+  .fx{padding:0 8px;line-height:22px;font-size:12px}
+  .expl{padding:0 13px 12px}
+  .expl pre{font-size:11.5px}
+  .check{grid-template-columns:70px 1fr;gap:10px;padding:10px 13px}
+  th,td{padding:8px 10px}
+  .tw{-webkit-overflow-scrolling:touch}
+  .legend{font-size:12px;gap:10px}
+  .footer{font-size:12px}
+}
+@media print{
+  .verdict{position:static} .cols{grid-template-columns:1fr} .mast-side{display:none}
+  body{background:#fff} .panel{box-shadow:none;break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="mast">
+  <div class="mast-in">
+    <div>
+      <div class="eyebrow">Cooperative credit appraisal · amounts in ETB</div>
+      <h1>Multi-Sector Financing Appraisal</h1>
+      <p>Sizes the installment a beneficiary can carry out of the benefit the financed technology itself generates, then solves for the number of installments that repays the coop loan. Every figure below is live — click <span class="num">ƒ</span> on any row to see the formula with this beneficiary's numbers substituted in.</p>
+    </div>
+    <div class="mast-side">
+      <button class="btn" id="reset" type="button">Reset to example</button>
+      <button class="btn" id="print" type="button">Print / PDF</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="verdict" id="verdict">
+    <div class="verdict-l">
+      <div class="verdict-tag" id="vTag">GO</div>
+      <div class="verdict-why" id="vWhy"></div>
+    </div>
+    <div class="chips">
+      <span class="chip"><span class="dot d-pass" id="cKycDot"></span><b>KYC</b> <span id="cKyc"></span></span>
+      <span class="chip"><span class="dot d-pass" id="cInDot"></span><b>Inputs</b> <span id="cIn"></span></span>
+      <span class="chip"><span class="dot d-pass" id="cFdDot"></span><b>Findings</b> <span id="cFd"></span></span>
+    </div>
+  </div>
+
+  <div class="cols">
+    <!-- ============ INPUT RAIL ============ -->
+    <div class="rail">
+      <section class="panel">
+        <div class="phead"><span class="sec">2</span><h2>Eligibility · KYC</h2><span class="hint">all five must be Yes</span></div>
+        <div class="pbody" id="kycBox"></div>
+      </section>
+
+      <section class="panel">
+        <div class="phead"><span class="sec">3</span><h2>Benefit lines</h2><span class="hint">ETB per year</span></div>
+        <div class="pbody" id="benefitBox"></div>
+        <div class="pnote">The loan is repaid from these lines — not from the household's existing profit.</div>
+      </section>
+
+      <section class="panel">
+        <div class="phead"><span class="sec">3</span><h2>Cost &amp; capacity</h2></div>
+        <div class="pbody" id="costBox"></div>
+      </section>
+
+      <section class="panel">
+        <div class="phead"><span class="sec">4</span><h2>Programme parameters</h2></div>
+        <div class="pbody" id="paramBox"></div>
+        <div class="pnote">Stress factor, coverage buffer and the maintenance convention are programme methodology — move them only with approval.</div>
+      </section>
+    </div>
+
+    <!-- ============ RESULTS ============ -->
+    <div class="stack">
+      <section class="panel">
+        <div class="phead"><span class="sec">5</span><h2>Repayment capacity</h2><span class="hint">click any row for its formula</span></div>
+        <div class="chain" id="capChain"></div>
+      </section>
+
+      <section class="panel">
+        <div class="phead"><span class="sec">6a</span><h2>Financing split</h2></div>
+        <div class="pbody">
+          <div class="splitbar" id="splitBar">
+            <div class="sp-sub" id="spSub"></div><div class="sp-loan" id="spLoan"></div><div class="sp-ben" id="spBen"></div>
+          </div>
+          <div class="legend">
+            <span><i class="sp-sub" style="background:var(--accent)"></i>OMB / VE subsidy</span>
+            <span><i class="sp-loan" style="background:var(--ochre)"></i>Coop loan — the amount repaid below</span>
+            <span><i class="sp-ben" style="background:var(--ink-3)"></i>Beneficiary contribution</span>
+          </div>
+        </div>
+        <div class="chain" id="splitChain"></div>
+      </section>
+
+      <section class="panel">
+        <div class="phead"><span class="sec">6b</span><h2>Loan tenure</h2><span class="hint" id="tenureHint"></span></div>
+        <div class="chain" id="tenChain"></div>
+      </section>
+
+      <section class="panel">
+        <div class="phead"><span class="sec">6c</span><h2>Installment at each tenure</h2><span class="hint">loan fixed · only the tenure varies</span></div>
+        <div class="pbody"><div id="chart"></div></div>
+        <div class="tw"><table id="tenTable"><thead><tr>
+          <th class="l">Target</th><th>Installments</th><th>Actual tenure</th><th>Installment</th>
+          <th>% of maximum</th><th>Total interest</th><th class="l">Status</th></tr></thead><tbody></tbody></table></div>
+        <div class="pnote">Installments are whole numbers, so the actual tenure can differ from the target — at 2 cycles a year a 30-month target is exactly 5 installments, but at 5 cycles a year it would be 12.5 and is rounded up.</div>
+      </section>
+
+      <section class="panel">
+        <div class="phead"><span class="sec">8</span><h2>Validation log</h2><span class="hint">what the tool checked</span></div>
+        <div class="subhead">8A · Input checks — <em>a failure means the form goes back for data</em></div>
+        <div class="checks" id="checksA"></div>
+        <div class="subhead">8B · Assessment findings — <em>a failure means the financing itself does not work</em></div>
+        <div class="checks" id="checksB"></div>
+      </section>
+
+      <p class="footer"><b>Limits worth stating.</b> Installments are level and the rate constant — grace periods, balloons and step-up schedules are not modelled. The annual rate is divided by the number of cycles, which is the nominal convention: 16% over 2 cycles costs 16.6% effective. Benefits are forecasts; the 25% haircut exists because of that, but it does not make a badly estimated benefit line safe. This sizes affordability only — character, collateral and the coop's exposure limits sit outside it.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const S = {
+  cycles:2, energy:190000, rental:0, maintAv:17000, addInc:0, othInc:0, extraOp:0, othExp:0,
+  capex:700000, contrib:140000, statedEmi:0, life:10,
+  rate:.16, stress:.25, dscr:1.3, maintPct:.02, subsidyPct:.30, loanPct:.50,
+  kyc:[true,true,true,true,true]
+};
+const DEFAULTS = JSON.parse(JSON.stringify(S));
+const KYCQ = ["Land / business holding certificate available?","National ID (Fayda) available?",
+  "Bank / MFI account held?","Free of defaulted or problem loans?","Willing to co-invest in the technology?"];
+
+const nf0=new Intl.NumberFormat("en-US",{maximumFractionDigits:0});
+const nf2=new Intl.NumberFormat("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const E=n=>nf0.format(Math.round(n));
+const P=(n,d)=>(n*100).toFixed(d===undefined?1:d)+"%";
+const el=(t,c,x)=>{const e=document.createElement(t); if(c)e.className=c; if(x!==undefined)e.textContent=x; return e;};
+
+function pmt(r,n,pv){ return n<=0?NaN : (r? pv*r/(1-Math.pow(1+r,-n)) : pv/n); }
+function nper(r,p,pv){ if(r===0)return pv/p; if(p<=pv*r)return null; return Math.log(p/(p-pv*r))/Math.log(1+r); }
+
+function model(s){
+  const m={};
+  m.maintNew = s.capex*s.maintPct;
+  m.benYr = s.energy+s.rental+s.maintAv+s.addInc+s.othInc - s.extraOp - s.othExp - m.maintNew;
+  m.benCycle = s.cycles>0 ? m.benYr/s.cycles : 0;
+  m.stressed = m.benCycle*(1-s.stress);
+  m.capacity = s.dscr>0 ? m.stressed/s.dscr : 0;
+  m.maxEmi = m.capacity<=0 ? 0 : (s.statedEmi<=0 ? m.capacity : Math.min(m.capacity, s.statedEmi));
+  m.ceilingBinds = s.statedEmi>0 && s.statedEmi < m.capacity;
+  m.subsidyAmt = s.capex*s.subsidyPct;
+  m.loanAmt = s.capex*s.loanPct;
+  m.benefPct = Math.max(Math.round((1-s.subsidyPct-s.loanPct)*1e6)/1e6, 0);
+  m.benefAmt = s.capex*m.benefPct;
+  m.rateCycle = s.cycles>0 ? s.rate/s.cycles : 0;
+  m.interestPerCycle = m.loanAmt*m.rateCycle;
+  if(m.loanAmt<=0)            { m.state="noloan";   m.stateMsg="No loan required"; }
+  else if(m.maxEmi<=0)        { m.state="nocap";    m.stateMsg="No repayment capacity"; }
+  else if(m.maxEmi<=m.interestPerCycle){ m.state="never"; m.stateMsg="Never repays"; }
+  else                        { m.state="ok";       m.nExact=nper(m.rateCycle,m.maxEmi,m.loanAmt); }
+  if(m.state==="ok"){
+    m.n = Math.ceil(m.nExact-1e-12);
+    m.months = m.n*12/s.cycles;  m.years = m.n/s.cycles;
+    m.emi = pmt(m.rateCycle,m.n,m.loanAmt);
+    m.headroom = m.maxEmi-m.emi;
+    m.effDscr = m.stressed/m.emi;
+    m.totalRepaid = m.emi*m.n;   m.totalInt = m.totalRepaid-m.loanAmt;
+    m.withinLife = m.months <= s.life*12;
+  } else { m.withinLife = (m.state==="noloan"); }
+  m.feasible = m.state==="noloan" ? true : (m.state==="ok" && m.withinLife);
+
+  const kycAnswered = s.kyc.every(v=>v!==null);
+  const kycYes = s.kyc.filter(v=>v===true).length;
+  m.elig = !kycAnswered ? "unanswered" : (kycYes===5 ? "eligible" : "ineligible");
+  m.kycNo = s.kyc.filter(v=>v===false).length;
+
+  const good=n=>Number.isFinite(n);
+  m.A=[
+    {ok: good(s.cycles)&&s.cycles>=1&&s.cycles<=12&&s.cycles===Math.round(s.cycles),
+     l:"Payment cycles", d:(s.cycles>=1&&s.cycles<=12&&s.cycles===Math.round(s.cycles))
+        ? s.cycles+" cycle(s) a year" : "Must be a whole number from 1 to 12 — every per-cycle figure divides by it."},
+    {ok: s.capex>0, l:"Technology cost", d: s.capex>0 ? E(s.capex)+" ETB quoted"
+        : "Zero or blank cost makes the whole financing split zero."},
+    {ok: good(s.life)&&s.life>=1, l:"Product life",
+     d: (s.life>=1? s.life+" years — tenure ceiling "+(s.life*12)+" months" : "Needed to test the tenure against the life of the asset.")},
+    {ok: s.subsidyPct>=0&&s.subsidyPct<=.3&&s.loanPct>=0&&s.loanPct<=.5&&(s.subsidyPct+s.loanPct)<=1,
+     l:"Financing split", d:(s.subsidyPct>.3?"Subsidy "+P(s.subsidyPct)+" exceeds the 30% cap"
+        : s.loanPct>.5?"Loan "+P(s.loanPct)+" exceeds the 50% cap"
+        : (s.subsidyPct<0||s.loanPct<0)?"A share is negative"
+        : "Shares total "+P(s.subsidyPct+s.loanPct+m.benefPct)+" — subsidy "+P(s.subsidyPct)+", loan "+P(s.loanPct)+", beneficiary "+P(m.benefPct))},
+    {ok: s.rate>=0&&s.rate<1&&s.stress>=0&&s.stress<1&&s.dscr>=1,
+     l:"Methodology", d:"Rate "+P(s.rate)+", stress "+P(s.stress)+", DSCR "+nf2.format(s.dscr)
+        +(s.dscr<1?" — the buffer must be at least 1.00":"")},
+    {ok: m.elig==="eligible", l:"KYC complete",
+     d: m.elig==="eligible" ? "All five satisfied"
+        : m.elig==="unanswered" ? s.kyc.filter(v=>v!==null).length+" of 5 answered"
+        : m.kycNo+" item(s) answered No"}
+  ];
+  m.B=[
+    {ok: m.benYr>0, l:"Net benefit", d: m.benYr>0 ? E(m.benYr)+" ETB a year after the "+P(s.maintPct)+" maintenance charge"
+        : "The technology costs more to run than it saves — no tenure can repay a negative benefit."},
+    {ok: m.maxEmi>0, l:"Repayment capacity", d: m.maxEmi>0 ? E(m.maxEmi)+" ETB per cycle after the haircut and buffer"
+        : "Capacity is zero or negative once the stress haircut and coverage buffer are applied."},
+    {ok: m.loanAmt<=0 || m.maxEmi>m.interestPerCycle, l:"Covers the interest",
+     d: m.loanAmt<=0 ? "No loan — not applicable"
+        : (m.maxEmi>m.interestPerCycle ? "Interest "+E(m.interestPerCycle)+" ETB per cycle vs installment "+E(m.maxEmi)+" ETB"
+           : "The installment is smaller than the interest accruing each cycle — the balance would never fall.")},
+    {ok: m.withinLife, l:"Within product life",
+     d: m.loanAmt<=0 ? "No loan — not applicable"
+        : (m.state!=="ok" ? "No valid tenure — "+m.stateMsg.toLowerCase()
+           : (m.withinLife ? E(m.months)+" months against a "+(s.life*12)+"-month product life"
+              : "Tenure of "+E(m.months)+" months exceeds the "+(s.life*12)+"-month product life"))},
+    {ok: s.contrib>=m.benefAmt, warn:true, l:"Contribution",
+     d: s.contrib>=m.benefAmt
+        ? "Brings "+E(s.contrib)+" ETB against "+E(m.benefAmt)+" required"+(s.contrib>m.benefAmt+0.5?" — surplus "+E(s.contrib-m.benefAmt)+" ETB":"")
+        : "Short by "+E(m.benefAmt-s.contrib)+" ETB — refer to a senior officer"},
+    {ok: !m.ceilingBinds, warn:true, l:"Stated ceiling",
+     d: s.statedEmi<=0 ? "No ceiling stated — calculated capacity is used"
+        : (m.ceilingBinds ? "Beneficiary caps themselves at "+E(s.statedEmi)+" ETB, below the calculated "+E(m.capacity)+" — tenure is lengthened"
+           : "Stated "+E(s.statedEmi)+" ETB is above the calculated "+E(m.capacity)+" — calculated applies")}
+  ];
+  m.failA = m.A.filter(c=>!c.ok).length;
+  m.failB = m.B.filter(c=>!c.ok && !c.warn).length;
+  m.caution = m.B.filter(c=>!c.ok && c.warn).length;
+
+  const goMsg = m.loanAmt<=0
+    ? "no loan required — beneficiary contributes "+E(m.benefAmt)+" ETB"
+    : m.n+" installments of "+E(m.emi)+" ETB per cycle over "+E(m.months)+" months";
+  const noGoWhy = m.benYr<=0 ? "the technology's running costs exceed the savings it generates"
+    : m.maxEmi<=0 ? "the beneficiary has no repayment capacity after the stress haircut and coverage buffer"
+    : m.state!=="ok" ? "the installment does not cover the interest, so the loan would never be repaid"
+    : "the tenure of "+E(m.months)+" months exceeds the "+(s.life*12)+"-month product life";
+
+  if(m.elig==="unanswered")      m.decision={k:"data", tag:"RETURN FOR DATA", why:"The KYC section is not complete."};
+  else if(m.elig==="ineligible") m.decision={k:"no",   tag:"NO-GO", why:"KYC is not satisfied — "+m.kycNo+" item(s) answered No."};
+  else if(m.failA>0)             m.decision={k:"data", tag:"RETURN FOR DATA", why:m.failA+" input check"+(m.failA>1?"s":"")+" failing — the numbers below mean nothing until they are fixed."};
+  else if(m.failB>0)             m.decision={k:"no",   tag:"NO-GO", why:"The inputs are sound, but "+noGoWhy+"."};
+  else if(m.caution>0)           m.decision={k:"cond", tag:"GO WITH CONDITIONS", why:goMsg.charAt(0).toUpperCase()+goMsg.slice(1)+" — "+m.caution+" item(s) need written justification."};
+  else                           m.decision={k:"go",   tag:"GO", why:goMsg.charAt(0).toUpperCase()+goMsg.slice(1)+"."};
+  return m;
+}
+
+/* ---------------- input rail ---------------- */
+function numField(box,key,label,unit,step){
+  const f=el("div","field");
+  const lw=el("div"); lw.appendChild(el("label",null,label));
+  if(unit) lw.appendChild(el("span","u",unit));
+  const i=document.createElement("input");
+  i.type="number"; i.value=S[key]; i.step=step||"1"; i.id="f_"+key;
+  i.setAttribute("aria-label",label);
+  i.setAttribute("inputmode","decimal");   // numeric keypad on phones
+  i.setAttribute("enterkeyhint","done");
+  i.addEventListener("input",()=>{ const v=parseFloat(i.value); S[key]=Number.isFinite(v)?v:0; render(); });
+  f.append(lw,i); box.appendChild(f); return i;
+}
+function slider(box,key,label,min,max,step,fmt){
+  const w=el("div","slider"), top=el("div","slider-top");
+  top.appendChild(el("span",null,label));
+  const b=el("b",null,fmt(S[key])); top.appendChild(b);
+  const r=document.createElement("input");
+  r.type="range"; r.min=min; r.max=max; r.step=step; r.value=S[key];
+  r.setAttribute("aria-label",label); r.id="f_"+key;
+  r.addEventListener("input",()=>{ S[key]=parseFloat(r.value); b.textContent=fmt(S[key]); render(); });
+  w.append(top,r); box.appendChild(w); return {r,b,fmt};
+}
+const sliders={};
+function buildInputs(){
+  const k=document.getElementById("kycBox"); k.textContent="";
+  KYCQ.forEach((q,i)=>{
+    const row=el("div","kyc"); row.appendChild(el("span",null,q));
+    const seg=el("div","seg");
+    [["Yes",true],["No",false]].forEach(([t,v])=>{
+      const b=el("button","",t); b.type="button";
+      b.setAttribute("aria-pressed", String(S.kyc[i]===v));
+      b.addEventListener("click",()=>{ S.kyc[i]= (S.kyc[i]===v? null : v); buildInputs(); render(); });
+      seg.appendChild(b);
+    });
+    row.appendChild(seg); k.appendChild(row);
+  });
+  const b=document.getElementById("benefitBox"); b.textContent="";
+  numField(b,"energy","Energy cost eliminated","fuel or grid the technology replaces","1000");
+  numField(b,"rental","Equipment rental avoided",null,"1000");
+  numField(b,"maintAv","Old maintenance avoided",null,"1000");
+  numField(b,"addInc","Additional income enabled","new yield or services","1000");
+  numField(b,"othInc","Other income",null,"1000");
+  numField(b,"extraOp","Extra operating cost","excludes new maintenance","1000");
+  numField(b,"othExp","Other expenses","transport and similar","1000");
+
+  const c=document.getElementById("costBox"); c.textContent="";
+  numField(c,"capex","Quoted technology cost","ETB, VAT-inclusive","1000");
+  numField(c,"contrib","Contribution available","ETB the beneficiary can bring","1000");
+  numField(c,"statedEmi","Stated installment ceiling","ETB per cycle · 0 = use calculated","500");
+  numField(c,"cycles","Payment cycles per year","12 monthly · harvests if seasonal","1");
+  numField(c,"life","Product life","years","1");
+
+  const p=document.getElementById("paramBox"); p.textContent="";
+  sliders.rate=slider(p,"rate","Lending interest rate",0,.4,.005,v=>P(v));
+  sliders.subsidyPct=slider(p,"subsidyPct","OMB / VE subsidy · cap 30%",0,.3,.01,v=>P(v));
+  sliders.loanPct=slider(p,"loanPct","Coop loan · cap 50%",0,.5,.01,v=>P(v));
+  sliders.stress=slider(p,"stress","Stress factor on benefit",0,.6,.01,v=>P(v));
+  sliders.dscr=slider(p,"dscr","Repayment buffer (DSCR)",1,2.5,.05,v=>nf2.format(v));
+  sliders.maintPct=slider(p,"maintPct","Maintenance on new technology",0,.1,.005,v=>P(v));
+}
+
+/* ---------------- result rows ---------------- */
+function chain(host, rows){
+  host.textContent="";
+  rows.forEach((r,i)=>{
+    const wrap=el("div","row"+(r.key?" key":""));
+    const h=el("button","row-h"); h.type="button";
+    h.setAttribute("aria-expanded","false");
+    h.append(el("span","row-l",r.label), el("span","row-v",r.value));
+    h.appendChild(r.tag ? tagEl(r.tag) : el("span","fx","ƒ"));
+    const body=el("div","expl"); body.hidden=true;
+    if(r.formula){ body.appendChild(el("div","lbl","Formula")); const pre=el("pre",null,r.formula); body.appendChild(pre); }
+    if(r.subst){ body.appendChild(el("div","lbl","With this beneficiary's numbers")); body.appendChild(el("pre",null,r.subst)); }
+    if(r.why){ body.appendChild(el("div","lbl","Why it works this way")); body.appendChild(el("p",null,r.why)); }
+    h.addEventListener("click",()=>{ const open=h.getAttribute("aria-expanded")==="true";
+      h.setAttribute("aria-expanded",String(!open)); body.hidden=open; });
+    wrap.append(h,body); host.appendChild(wrap);
+  });
+}
+function tagEl(t){ const s=el("span","tag t-"+t.k,t.t); return s; }
+
+/* ---------------- chart ---------------- */
+const TARGETS=[12,18,24,30,36,42,48,60,72,84,96,108,120];
+function drawChart(s,m){
+  const host=document.getElementById("chart");
+  const pts=TARGETS.map(t=>{
+    const n=Math.max(1,Math.ceil(t*s.cycles/12));
+    const emi=(m.loanAmt>0)?pmt(m.rateCycle,n,m.loanAmt):0;
+    return {t,n,months:n*12/s.cycles,emi};
+  }).filter(p=>Number.isFinite(p.emi)&&p.emi>0);
+  if(!pts.length){ host.innerHTML='<p style="color:var(--ink-3);font-size:13px;margin:8px 0">No loan to schedule — nothing to chart.</p>'; return; }
+  // narrower viewBox on a phone: the same physical width maps to fewer units, so text reads larger
+  const cw = host.clientWidth || 700;
+  const nw = cw < 560;
+  const W=nw?340:760, H=nw?300:290, L=nw?52:68, Rr=nw?10:16, T=nw?22:18, Bm=nw?44:42;
+  const k = W/cw;                          // viewBox units per CSS pixel
+  const FS=+(12.5*k).toFixed(1), LS=+(12*k).toFixed(1);   // constant rendered size at any width
+  const xs=pts.map(p=>p.t), ys=pts.map(p=>p.emi);
+  const raw=Math.max(...ys, m.maxEmi>0?m.maxEmi:0)*1.12, yMin=0;
+  const mag=Math.pow(10,Math.floor(Math.log10(Math.max(raw,1)/4)));
+  const step=([1,2,2.5,5,10].find(k=>k*mag>=raw/4)||10)*mag;
+  const yMax=step*4;
+  const xMin=Math.min(...xs), xMax=Math.max(...xs);
+  const X=v=>L+(v-xMin)/(xMax-xMin)*(W-L-Rr);
+  const Y=v=>T+(1-(v-yMin)/(yMax-yMin))*(H-T-Bm);
+  const tv=[0,1,2,3,4].map(i=>step*i);
+  let g="";
+  tv.forEach(v=>{ g+=`<line x1="${L}" y1="${Y(v).toFixed(1)}" x2="${W-Rr}" y2="${Y(v).toFixed(1)}" stroke="var(--line)" stroke-width="1"/>`
+    +`<text x="${L-7}" y="${(Y(v)+4).toFixed(1)}" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="${FS}" fill="var(--ink-3)">${nw?(v/1000).toFixed(0)+"k":E(v)}</text>`; });
+  xs.forEach((t,i)=>{ if(nw && i%2) return;   // every other tick on a phone, so labels never collide
+    g+=`<text x="${X(t).toFixed(1)}" y="${H-Bm+18}" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="${FS}" fill="var(--ink-3)">${t}</text>`; });
+  const path=pts.map((p,i)=>(i?"L":"M")+X(p.t).toFixed(1)+" "+Y(p.emi).toFixed(1)).join(" ");
+  let cap="";
+  if(m.maxEmi>0 && m.maxEmi<yMax){
+    const yc=Y(m.maxEmi);
+    cap=`<rect x="${L}" y="${T}" width="${W-L-Rr}" height="${(yc-T).toFixed(1)}" fill="var(--fail)" opacity=".07"/>`
+      +`<line x1="${L}" y1="${yc.toFixed(1)}" x2="${W-Rr}" y2="${yc.toFixed(1)}" stroke="var(--fail)" stroke-width="1.5" stroke-dasharray="5 4"/>`
+      +`<text x="${W-Rr}" y="${(yc-7).toFixed(1)}" text-anchor="end" font-family="Archivo, sans-serif" font-weight="600" font-size="${LS}" fill="var(--fail)">${nw?"MAX "+E(m.maxEmi):"MAXIMUM PAYABLE "+E(m.maxEmi)}</text>`;
+  }
+  let rec="";
+  if(m.state==="ok"){
+    const near=pts.reduce((a,b)=>Math.abs(b.months-m.months)<Math.abs(a.months-m.months)?b:a);
+    if(Math.abs(near.months-m.months)<.51){
+      const lx=Math.min(Math.max(X(near.t), L+44), W-Rr-44);   // keep the label inside the drawing
+      rec=`<circle cx="${X(near.t).toFixed(1)}" cy="${Y(near.emi).toFixed(1)}" r="5.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/>`
+        +`<text x="${lx.toFixed(1)}" y="${(Y(near.emi)-13).toFixed(1)}" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700" font-size="${LS}" fill="var(--accent)">RECOMMENDED</text>`;
+    }
+  }
+  const dots=pts.map(p=>`<circle cx="${X(p.t).toFixed(1)}" cy="${Y(p.emi).toFixed(1)}" r="2.8" fill="var(--accent)"/>`).join("");
+  host.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Installment per cycle against tenure in months">
+    ${g}${cap}
+    <path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round"/>
+    ${dots}${rec}
+    <text x="${L}" y="${H-6}" font-family="Archivo, sans-serif" font-size="${LS}" font-weight="600" fill="var(--ink-3)" letter-spacing=".08em">TENURE (MONTHS)</text>
+    <text x="${L-7}" y="${T-7}" text-anchor="end" font-family="Archivo, sans-serif" font-size="${LS}" font-weight="600" fill="var(--ink-3)" letter-spacing=".08em">${nw?"ETB (000)":"ETB"}</text>
+  </svg>`;
+}
+
+/* ---------------- render ---------------- */
+function render(){
+  const s=S, m=model(s);
+  const v=document.getElementById("verdict");
+  v.className="verdict is-"+m.decision.k;
+  document.getElementById("vTag").textContent=m.decision.tag;
+  document.getElementById("vWhy").textContent=m.decision.why;
+  const set=(id,dotId,txt,k)=>{ document.getElementById(id).textContent=txt;
+    document.getElementById(dotId).className="dot d-"+k; };
+  set("cKyc","cKycDot", m.elig==="eligible"?"eligible":m.elig==="unanswered"?"incomplete":m.kycNo+" failed",
+      m.elig==="eligible"?"pass":m.elig==="unanswered"?"caution":"fail");
+  set("cIn","cInDot", m.failA? m.failA+" failing":"all pass", m.failA?"fail":"pass");
+  set("cFd","cFdDot", m.failB? m.failB+" failing": (m.caution? m.caution+" caution":"all pass"),
+      m.failB?"fail":(m.caution?"caution":"pass"));
+
+  document.getElementById("f_capex").classList.toggle("bad", !(s.capex>0));
+  document.getElementById("f_cycles").classList.toggle("bad", !(s.cycles>=1&&s.cycles<=12&&s.cycles===Math.round(s.cycles)));
+  document.getElementById("f_life").classList.toggle("bad", !(s.life>=1));
+
+  const dash="—";
+  chain(document.getElementById("capChain"),[
+    {label:"Maintenance on the new technology", value:E(m.maintNew)+" /yr",
+     formula:"maintenance = quoted cost × maintenance rate",
+     subst:E(s.capex)+" × "+P(s.maintPct)+" = "+E(m.maintNew)+" ETB per year",
+     why:"An owner who does not budget for upkeep will not have a working asset in year five, so this is charged against the benefit before any installment is sized."},
+    {label:"Incremental benefit per year", value:E(m.benYr)+" /yr",
+     formula:"benefit = energy saved + rental avoided + old maintenance avoided + additional income + other income\n          − extra operating cost − other expenses − new maintenance",
+     subst:E(s.energy)+" + "+E(s.rental)+" + "+E(s.maintAv)+" + "+E(s.addInc)+" + "+E(s.othInc)
+          +"\n − "+E(s.extraOp)+" − "+E(s.othExp)+" − "+E(m.maintNew)+"\n = "+E(m.benYr)+" ETB per year",
+     why:"This — not the household's total profit — is the pot the loan is repaid from. Sizing a loan against total profit lends against money the household already needs."},
+    {label:"Benefit per payment cycle", value:E(m.benCycle),
+     formula:"per cycle = annual benefit ÷ payment cycles per year",
+     subst:E(m.benYr)+" ÷ "+s.cycles+" = "+E(m.benCycle)+" ETB per cycle",
+     why:"Repayment happens when money actually arrives. For a crop-based beneficiary that is the number of harvests, not twelve months."},
+    {label:"After the "+P(s.stress)+" stress haircut", value:E(m.stressed),
+     formula:"stressed = benefit per cycle × (1 − stress factor)",
+     subst:E(m.benCycle)+" × (1 − "+P(s.stress)+") = "+E(m.stressed)+" ETB",
+     why:"Assessed benefits are estimates made in a good month. The haircut is what stops one weak season turning into a default."},
+    {label:"Capacity after the "+nf2.format(s.dscr)+" coverage buffer", value:E(m.capacity),
+     formula:"capacity = stressed benefit ÷ DSCR buffer",
+     subst:E(m.stressed)+" ÷ "+nf2.format(s.dscr)+" = "+E(m.capacity)+" ETB",
+     why:"Both the haircut and the buffer are applied, deliberately. The installment is measured against a pessimistic benefit so there is room left over."},
+    {key:true, label:"Maximum installment payable", value:E(m.maxEmi)+" /cycle",
+     formula:"maximum = capacity, unless the beneficiary stated a lower ceiling",
+     subst: s.statedEmi>0
+        ? "min( capacity "+E(m.capacity)+", stated ceiling "+E(s.statedEmi)+" ) = "+E(m.maxEmi)+" ETB"
+        : "no ceiling stated → capacity "+E(m.capacity)+" = "+E(m.maxEmi)+" ETB",
+     why:"The tool never schedules an installment larger than the beneficiary says they can pay."}
+  ]);
+
+  const bar=[["spSub",s.subsidyPct,P(s.subsidyPct,0)],["spLoan",s.loanPct,P(s.loanPct,0)],["spBen",m.benefPct,P(m.benefPct,0)]];
+  bar.forEach(([id,frac,txt])=>{ const e=document.getElementById(id);
+    e.style.flex="0 0 "+(frac*100).toFixed(2)+"%"; e.textContent= frac>=.12? txt : ""; });
+
+  const splitOk = s.subsidyPct>=0&&s.subsidyPct<=.3&&s.loanPct>=0&&s.loanPct<=.5;
+  chain(document.getElementById("splitChain"),[
+    {label:"OMB / VE subsidy", value:E(m.subsidyAmt)+"  ("+P(s.subsidyPct)+")",
+     formula:"subsidy = quoted cost × subsidy share",
+     subst:E(s.capex)+" × "+P(s.subsidyPct)+" = "+E(m.subsidyAmt)+" ETB",
+     why:"Capped at 30% by policy. The cap is re-tested as a live rule, not only as an input limit — a pasted value walks straight past an input limit."},
+    {key:true, label:"Coop loan", value:E(m.loanAmt)+"  ("+P(s.loanPct)+")",
+     formula:"loan = quoted cost × loan share",
+     subst:E(s.capex)+" × "+P(s.loanPct)+" = "+E(m.loanAmt)+" ETB",
+     why:"This is the only amount the tenure below is solved for. The subsidy is never repaid and the contribution is paid up front."},
+    {label:"Beneficiary contribution required", value:E(m.benefAmt)+"  ("+P(m.benefPct)+")",
+     formula:"beneficiary share = 1 − subsidy share − loan share   (floored at zero)",
+     subst:"1 − "+P(s.subsidyPct)+" − "+P(s.loanPct)+" = "+P(m.benefPct)+"  →  "+E(s.capex)+" × "+P(m.benefPct)+" = "+E(m.benefAmt)+" ETB",
+     why:"Written as a residual so the three shares always total 100%, however the two policy levers are moved."},
+    {label:"Contribution the beneficiary can bring", value:E(s.contrib),
+     tag: s.contrib>=m.benefAmt ? {k:"pass",t:"ok"} : {k:"caution",t:"short"},
+     formula:"compare available contribution with the required contribution",
+     subst: s.contrib>=m.benefAmt
+        ? E(s.contrib)+" ≥ "+E(m.benefAmt)+(s.contrib>m.benefAmt+0.5?"  · surplus "+E(s.contrib-m.benefAmt)+" ETB":"  · exactly met")
+        : E(s.contrib)+" < "+E(m.benefAmt)+"  · short by "+E(m.benefAmt-s.contrib)+" ETB",
+     why:"A shortfall does not block the financing outright, but it needs a senior officer's written justification. A surplus can justify a shorter tenure or a smaller loan."},
+    !splitOk ? {label:"Policy cap breach", value:"check the split",
+      tag:{k:"fail",t:"fail"}, formula:"subsidy ≤ 30%  ·  loan ≤ 50%  ·  shares total 100%",
+      subst:"subsidy "+P(s.subsidyPct)+" · loan "+P(s.loanPct),
+      why:"One of the shares is outside its policy cap."} : null
+  ].filter(Boolean));
+
+  const hint=document.getElementById("tenureHint");
+  hint.textContent = m.state==="ok" ? nf2.format(m.effDscr)+"× coverage at the scheduled installment" : m.stateMsg;
+  const tr=[];
+  tr.push({label:"Interest rate per cycle", value:(m.rateCycle*100).toFixed(3)+"%",
+    formula:"rate per cycle = annual rate ÷ payment cycles per year",
+    subst:P(s.rate)+" ÷ "+s.cycles+" = "+(m.rateCycle*100).toFixed(3)+"% each installment",
+    why:"The nominal convention. It is not an effective annual rate — at 16% over two cycles the effective annual cost is "+P(Math.pow(1+m.rateCycle,s.cycles)-1,1)+"."});
+  if(m.state==="ok"){
+    tr.push(
+     {label:"Installments required (exact)", value:m.nExact.toFixed(2),
+      formula:"n = NPER( rate per cycle, −installment, loan )   =   ln( p / (p − loan×r) ) ÷ ln(1 + r)",
+      subst:"ln( "+E(m.maxEmi)+" / ("+E(m.maxEmi)+" − "+E(m.loanAmt)+"×"+(m.rateCycle*100).toFixed(3)+"%) ) ÷ ln(1+"+(m.rateCycle*100).toFixed(3)+"%) = "+m.nExact.toFixed(4),
+      why:"Only reached after three guards: there must be a loan, there must be capacity, and the installment must exceed the interest accruing each cycle. Otherwise the balance never falls."},
+     {key:true, label:"Recommended installments", value:m.n+"  =  "+E(m.months)+" months",
+      formula:"n = roundup( exact )   ·   months = n × 12 ÷ cycles",
+      subst:"roundup("+m.nExact.toFixed(2)+") = "+m.n+" installments  →  "+m.n+" × 12 ÷ "+s.cycles+" = "+E(m.months)+" months ("+m.years.toFixed(1)+" years)",
+      why:"Rounding up rather than to nearest guarantees the final installment is smaller than the rest, never larger than the beneficiary can pay."},
+     {key:true, label:"Scheduled installment", value:E(m.emi)+" /cycle",
+      formula:"installment = −PMT( rate per cycle, n, loan )   =   loan × r ÷ (1 − (1+r)^−n)",
+      subst:E(m.loanAmt)+" × "+(m.rateCycle*100).toFixed(3)+"% ÷ (1 − (1+"+(m.rateCycle*100).toFixed(3)+"%)^−"+m.n+") = "+E(m.emi)+" ETB",
+      why:"Below the maximum payable, because the installment count was rounded up. That difference is the spare capacity on the next row."},
+     {label:"Spare capacity per cycle", value:E(m.headroom),
+      tag: m.headroom>=0?{k:"pass",t:"comfortable"}:{k:"fail",t:"over"},
+      formula:"spare = maximum payable − scheduled installment",
+      subst:E(m.maxEmi)+" − "+E(m.emi)+" = "+E(m.headroom)+" ETB left each cycle",
+      why:"Shows how tight the schedule is. The original workbook computed both figures and never compared them."},
+     {label:"Effective coverage at this installment", value:nf2.format(m.effDscr)+"×",
+      tag: m.effDscr>=s.dscr?{k:"pass",t:"meets buffer"}:{k:"caution",t:"below buffer"},
+      formula:"coverage = stressed benefit per cycle ÷ scheduled installment",
+      subst:E(m.stressed)+" ÷ "+E(m.emi)+" = "+nf2.format(m.effDscr)+"×  against a required "+nf2.format(s.dscr)+"×",
+      why:"Lets a reviewer confirm the buffer was really achieved rather than assume it."},
+     {label:"Total repaid over the tenure", value:E(m.totalRepaid),
+      formula:"total = installment × number of installments",
+      subst:E(m.emi)+" × "+m.n+" = "+E(m.totalRepaid)+" ETB",
+      why:"The figure the beneficiary should be told before signing."},
+     {label:"Total interest", value:E(m.totalInt),
+      formula:"interest = total repaid − loan amount",
+      subst:E(m.totalRepaid)+" − "+E(m.loanAmt)+" = "+E(m.totalInt)+" ETB  ("+P(m.totalInt/m.loanAmt)+" of the amount borrowed)",
+      why:"The cost of credit. Never disclosed anywhere in the original workbook, though it is the first thing a borrower asks."},
+     {label:"Within product life", value: m.withinLife? E(m.months)+" of "+(s.life*12)+" months" : "exceeds by "+E(m.months-s.life*12)+" months",
+      tag: m.withinLife?{k:"pass",t:"yes"}:{k:"fail",t:"no"},
+      formula:"tenure in months ≤ product life × 12",
+      subst:E(m.months)+" months vs "+(s.life*12)+" months of asset life",
+      why:"The loan may not outlive the asset that secures it."});
+  } else {
+    tr.push({key:true, label:"Tenure", value:m.stateMsg, tag:{k: m.state==="noloan"?"mute":"fail", t:m.state==="noloan"?"n/a":"blocked"},
+      formula:"guards, in order:  loan > 0  →  capacity > 0  →  installment > interest per cycle  →  NPER",
+      subst: m.state==="noloan" ? "loan share is "+P(s.loanPct)+" — there is nothing to repay"
+        : m.state==="nocap" ? "capacity is "+E(m.capacity)+" ETB per cycle — nothing can be collected"
+        : "installment "+E(m.maxEmi)+" ETB vs interest "+E(m.interestPerCycle)+" ETB accruing each cycle — the balance never falls",
+      why:"The original workbook guarded only the third case. A blank technology cost produced a loan of zero, which returned a tenure of zero and reported the financing as feasible."});
+  }
+  chain(document.getElementById("tenChain"),tr);
+
+  drawChart(s,m);
+  const tb=document.querySelector("#tenTable tbody"); tb.textContent="";
+  TARGETS.forEach(t=>{
+    const n=Math.max(1,Math.ceil(t*s.cycles/12));
+    const months=n*12/s.cycles;
+    const emi=(m.loanAmt>0)?pmt(m.rateCycle,n,m.loanAmt):NaN;
+    const okEmi=Number.isFinite(emi);
+    const status = !okEmi ? "No loan to schedule"
+      : m.maxEmi<=0 ? "No repayment capacity"
+      : emi>m.maxEmi ? "Installment above capacity"
+      : months>s.life*12 ? "Beyond product life" : "Feasible";
+    const isRec = m.state==="ok" && n===m.n;
+    const row=el("tr", (isRec?"rec ":"")+(status==="Feasible"?"":"over"));
+    const cells=[[String(t)+" mo","l"],[String(n),""],[E(months)+" mo",""],
+      [okEmi?E(emi):dash,""],[okEmi&&m.maxEmi>0?P(emi/m.maxEmi,0):dash,""],
+      [okEmi?E(emi*n-m.loanAmt):dash,""]];
+    cells.forEach(([txt,cls])=>row.appendChild(el("td",cls,txt)));
+    const st=el("td","l"); st.appendChild(tagEl({k: status==="Feasible"?"pass":(status==="No loan to schedule"?"mute":"fail"), t:status}));
+    if(isRec){ st.appendChild(document.createTextNode(" ")); st.appendChild(el("span","mark","◄ RECOMMENDED")); }
+    row.appendChild(st); tb.appendChild(row);
+  });
+
+  const paint=(host,list)=>{ host.textContent="";
+    list.forEach(c=>{ const w=el("div","check");
+      const k = c.ok?"pass":(c.warn?"caution":"fail");
+      const t = c.ok?"pass":(c.warn?"caution":"fail");
+      const tw=el("div"); tw.appendChild(tagEl({k,t})); w.appendChild(tw);
+      const r=el("div"); r.appendChild(el("div","cl",c.l)); r.appendChild(el("div","cd",c.d));
+      w.appendChild(r); host.appendChild(w); }); };
+  paint(document.getElementById("checksA"), m.A);
+  paint(document.getElementById("checksB"), m.B);
+
+  try{ localStorage.setItem("msf.state", JSON.stringify(S)); }catch(e){}
+}
+
+document.getElementById("print").addEventListener("click",()=>window.print());
+document.getElementById("reset").addEventListener("click",()=>{
+  Object.assign(S, JSON.parse(JSON.stringify(DEFAULTS)));
+  buildInputs(); render();
+});
+try{
+  const saved=localStorage.getItem("msf.state");
+  if(saved){ const o=JSON.parse(saved); if(o&&typeof o==="object"&&Array.isArray(o.kyc)) Object.assign(S,o); }
+}catch(e){}
+buildInputs();
+render();
+// the chart picks its label sizing from its own width, so redraw it when that changes
+let rt; addEventListener("resize",()=>{ clearTimeout(rt); rt=setTimeout(()=>drawChart(S,model(S)),150); });
+addEventListener("orientationchange",()=>setTimeout(()=>drawChart(S,model(S)),250));
+</script>
+</body>
+</html>
