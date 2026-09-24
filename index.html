@@ -78,9 +78,9 @@ h1,h2,h3,.disp{font-family:var(--disp);text-wrap:balance;margin:0}
 .dot{width:8px;height:8px;border-radius:50%;flex:none}
 .d-pass{background:var(--pass)} .d-caution{background:var(--caution)} .d-fail{background:var(--fail)}
 
-.cols{display:grid;grid-template-columns:360px minmax(0,1fr);gap:18px;align-items:start}
-@media (max-width:1080px){.cols{grid-template-columns:1fr}}
-.rail{display:flex;flex-direction:column;gap:12px}
+.cols{display:flex;flex-direction:column;gap:20px;align-items:stretch}
+.rail{display:flex;flex-direction:column;gap:16px;width:100%;min-width:0}
+.main{display:flex;flex-direction:column;gap:16px;width:100%;min-width:0}
 .stack{display:flex;flex-direction:column;gap:18px;min-width:0}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:7px;box-shadow:var(--shadow);overflow:hidden}
 .phead{display:flex;align-items:baseline;gap:9px;padding:11px 15px;border-bottom:1px solid var(--line);background:var(--surface-2);flex-wrap:wrap}
@@ -154,6 +154,7 @@ tr.rec td{background:var(--accent-soft);font-weight:600}
 tr.dim td:not(.l){color:var(--ink-3)}
 .mark{font-family:var(--disp);font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--accent)}
 td input{width:82px;padding:4px 6px;font-size:12.5px;text-align:right;background:var(--ochre-soft)}
+.simple-spec{table-layout:fixed}.simple-spec th:nth-child(1),.simple-spec td:nth-child(1){width:28%}.simple-spec th:nth-child(2),.simple-spec td:nth-child(2){width:47%}.simple-spec th:nth-child(3),.simple-spec td:nth-child(3){width:25%}.simple-spec td input{width:100%;text-align:left;font-family:var(--body);background:var(--ochre-soft)}
 
 .checks{display:flex;flex-direction:column}
 .check{display:grid;grid-template-columns:78px 1fr;gap:12px;padding:9px 15px;border-bottom:1px solid var(--line);align-items:start}
@@ -194,15 +195,25 @@ svg{display:block;width:100%;height:auto}
   th,td{padding:8px 10px}
   td input{width:70px;font-size:15px}
 }
-@media print{ .verdict{position:static} .cols{grid-template-columns:1fr} .mast-side,.tabs{display:none} body{background:#fff} .panel{box-shadow:none;break-inside:avoid} }
+@media print{ .verdict{position:static} .cols{display:block} .mast-side,.tabs{display:none} body{background:#fff} .panel{box-shadow:none;break-inside:avoid} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
 /* revised field app */
-.pbody{padding:14px 16px}.field{grid-template-columns:minmax(260px,1fr) minmax(180px,320px);}.field.wide{grid-template-columns:1fr minmax(300px,520px)}
+.pbody{padding:16px 20px}.field{grid-template-columns:minmax(300px,1fr) minmax(260px,420px);}.field.wide{grid-template-columns:minmax(300px,1fr) minmax(360px,680px)}
+.rail > .panel{width:100%}
+.main > .panel{width:100%}
+#pane-a .input-table{font-size:13.5px}
+#pane-a .input-table th,#pane-a .input-table td{padding:9px 12px}
+#pane-a .callout{font-size:13.5px}
+#pane-a .phead{padding:13px 18px}
+#pane-a .pbody{padding:16px 20px}
 .field input,.field select,.field textarea{width:100%}textarea{min-height:70px;resize:vertical}
+.spec-table-wrap{overflow-x:auto;margin-top:8px}.spec-table{width:100%;min-width:760px;border-collapse:collapse}.spec-table th,.spec-table td{border:1px solid var(--line);padding:8px 10px;vertical-align:middle}.spec-table th{background:var(--surface-2);font-family:var(--disp);font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--ink-3)}.spec-table td:first-child{font-family:var(--body);font-weight:600;color:var(--ink)}.spec-table input{width:100%;box-sizing:border-box;padding:7px 8px;border:1px solid var(--line-2);border-radius:4px;background:var(--ochre-soft);font-family:var(--body);font-size:13px;color:var(--ink)}.spec-table .unit{width:105px}.spec-table .qty{width:85px}.spec-note{font-size:12px;color:var(--ink-3);margin:8px 0 0}.spec-section{margin:12px 0 2px;font-family:var(--disp);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
 .table-wrap{overflow:auto}.input-table{width:100%;border-collapse:collapse}.input-table th,.input-table td{border:1px solid var(--line);padding:8px;text-align:left}.input-table th{background:var(--surface-2);font-family:var(--disp);font-size:12px}.input-table input{width:100%;min-width:100px;padding:8px;border:1px solid var(--line-2);border-radius:4px;background:var(--surface)}
 .input-cell{background:var(--ochre-soft)!important}.calc-cell{background:var(--sunken)!important}
 .callout{padding:12px 14px;border:1px solid var(--line);background:var(--surface-2);border-radius:6px;margin:10px 0}.callout strong{font-family:var(--disp)}
+.simple-input-table{width:100%;border-collapse:collapse;margin:8px 0 14px}.simple-input-table th,.simple-input-table td{border:1px solid var(--line);padding:8px 10px}.simple-input-table th{background:var(--accent);color:#fff;font-family:var(--disp);font-size:12px;text-align:left}.simple-input-table td:first-child{font-weight:600;color:var(--ink-2)}.simple-input-table input,.simple-input-table select{width:100%;padding:7px 8px;border:1px solid var(--line-2);border-radius:4px;background:var(--ochre-soft);font-family:var(--mono);font-size:13px;color:var(--ink);text-align:right}.simple-input-table input[readonly]{background:var(--surface-2);color:var(--ink-2)}.table-title{font-family:var(--disp);font-size:13px;font-weight:700;margin:14px 0 5px;color:var(--ink)}.table-note{font-size:12px;color:var(--ink-3);margin:0 0 7px}.simple-input-table .total td{font-weight:700;background:var(--surface-2)}
+
 .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{border:1px solid var(--line);border-radius:6px;padding:12px;background:var(--surface)}.metric .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}.metric .value{font:600 20px var(--mono);margin-top:4px}.metric .sub{font-size:12px;color:var(--ink-2);margin-top:3px}
 .decision{padding:14px;border-radius:6px;border:1px solid var(--line);background:var(--surface)}.decision h3{font-size:17px}.decision p{margin:5px 0;color:var(--ink-2)}
 @media(max-width:800px){.summary-grid{grid-template-columns:1fr 1fr}.field,.field.wide{grid-template-columns:1fr}.field input,.field select,.field textarea{width:100%}}
@@ -231,10 +242,13 @@ svg{display:block;width:100%;height:auto}
 <section class="panel"><div class="phead"><span class="sec">1</span><h2>Beneficiary & solution</h2><span class="hint">Start here</span></div><div class="pbody" id="bio"></div></section>
 <section class="panel"><div class="phead"><span class="sec">2</span><h2>Readiness</h2><span class="hint">Keep questions simple</span></div><div class="pbody" id="elig"></div></section>
 <section class="panel"><div class="phead"><span class="sec">3</span><h2>Pre-intervention → Post-intervention</h2><span class="hint">Monthly operating values</span></div><div class="pbody">
-<div class="callout"><strong>Ask the beneficiary:</strong> “What is happening now?” and “What do you expect after this solution?” Enter the same period for both columns. If a line does not apply, enter 0.</div>
-<div class="table-wrap"><table class="input-table"><thead><tr><th>Income / revenue</th><th>Before / month</th><th>After / month</th><th>Change</th><th>Cost</th><th>Before / month</th><th>After / month</th><th>Change</th></tr></thead><tbody id="opsRows"></tbody><tfoot id="opsTotal"></tfoot></table></div>
+<div class="callout"><strong>Ask the beneficiary:</strong> “What is happening now?” and “What do you expect after this solution?” Use the same period for both columns. If a line does not apply, enter 0.</div>
+<div class="table-title">Revenue</div>
+<table class="simple-input-table"><thead><tr><th>Revenue</th><th>Pre-intervention / month</th><th>Post-intervention / month</th><th>Change</th></tr></thead><tbody id="revenueRows"></tbody><tfoot id="revenueTotal"></tfoot></table>
+<div class="table-title">Operating costs</div>
+<table class="simple-input-table"><thead><tr><th>Cost</th><th>Pre-intervention / month</th><th>Post-intervention / month</th><th>Change</th></tr></thead><tbody id="costRows"></tbody><tfoot id="costTotal"></tfoot></table>
 </div></section>
-<section class="panel"><div class="phead"><span class="sec">4</span><h2>Solution cost & programme assumptions</h2><span class="hint">Programme settings stay controlled</span></div><div class="pbody" id="finance"></div></section>
+<section class="panel"><div class="phead"><span class="sec">4</span><h2>Solution cost & financing</h2><span class="hint">Simple cost and loan view</span></div><div class="pbody" id="finance"></div></section>
 </div>
 <div class="main">
 <section class="panel"><div class="phead"><span class="sec">5</span><h2>Analysis & financing recommendation</h2></div><div class="pbody"><div class="summary-grid" id="metrics"></div><div class="decision" id="decision" style="margin-top:12px"></div></div></section>
@@ -259,8 +273,10 @@ svg{display:block;width:100%;height:auto}
 "use strict";
 const BLANK={name:"",status:"",sector:"",category:"",solution:"",other:"",specs:"",equipment:"",location:"",phone:"",date:new Date().toISOString().slice(0,10),officer:"",
 elig:[null,null,null,null,null], revenue:[0,0,0], revenuePost:[0,0,0], costs:[0,0,0,0,0,0,0,0], costsPost:[0,0,0,0,0,0,0,0],
-capex:0,cycles:12,life:10,contribAvailable:0,rate:.16,subsidyPct:.30,loanPct:.50,newRepayShare:.50,maintPct:.02,stress:.25,dscr:1.30};
+capex:0,solutionCost:0,energyCost:0,otherCapitalCost:0,cycles:12,life:10,contribAvailable:0,rate:.16,subsidyPct:.30,loanPct:.50,newRepayShare:.50,maintPct:.02,stress:.25,dscr:1.30,
+systemSpecs:{panelCapacity:"",panelQty:"",totalPvCapacity:"",batteryCapacity:"",batteryQty:"",inverterCapacity:"",controller:"",pumpMotorCapacity:"",storageCapacity:"",equipmentCapacity:"",mounting:"",wiringProtection:"",other:""}};
 let S=JSON.parse(localStorage.getItem("g7h-finance-state")||"null")||structuredClone(BLANK);
+S.systemSpecs=Object.assign(structuredClone(BLANK.systemSpecs),S.systemSpecs||{});
 const CATS=["Agriculture & Irrigation","Livestock & Poultry","Dairy & Food","Cooling & Cold Chain","Water & WASH","Healthcare","Enterprise & Services","Household Energy","Renewable Energy Systems","Other"];
 const SOLS=["Solar irrigation pump","Solar crop processing / milling","Solar poultry lighting / brooder","Solar livestock water pumping","Solar milk chiller","Solar food processing","Solar cold storage","Solar refrigerator","Solar water pumping","Solar healthcare power system","Solar barbershop / productive-use kit","Solar home energy system","Solar PV + battery system","Biogas / clean cooking system","Other"];
 const REV=["Main business revenue","Other revenue / services","Other income"];
@@ -302,6 +318,13 @@ function fld(key,label,opts={}){
 }
 function bind(key,conv=x=>x){const el=document.getElementById("f-"+key);if(!el)return;el.addEventListener("input",()=>{S[key]=conv(el.value);save();render()});el.addEventListener("change",()=>{S[key]=conv(el.value);save();render()})}
 function buildBio(){
+ const specRows=[
+  ["panelCapacity","Panel capacity","kWp / Wp","e.g. 2 kWp"],
+  ["batteryCapacity","Battery capacity","kWh / Ah","e.g. 5 kWh"],
+  ["inverterCapacity","Inverter / controller capacity","kW / kVA","e.g. 3 kW"],
+  ["equipmentCapacity","Key equipment / other specifications","Details","e.g. pump, motor, lights, refrigerator, etc."]
+ ];
+ const table=`<div class="spec-section">System specifications</div><div class="spec-note">Enter only the main specifications relevant to the solution. Keep this simple — add other technical details in the last row if needed.</div><div class="spec-table-wrap"><table class="spec-table simple-spec"><thead><tr><th>Component</th><th>Specification / value</th><th>Unit / details</th></tr></thead><tbody>${specRows.map(([key,label,unit,hint])=>`<tr><td>${label}</td><td><input data-spec="${key}" type="text" value="${esc(S.systemSpecs[key]||"")}" placeholder="${esc(hint)}"></td><td>${unit}</td></tr>`).join("")}</tbody></table></div>`;
  document.getElementById("bio").innerHTML=
  fld("name","Beneficiary / enterprise name",{wide:true})+
  fld("status","Business status",{select:["Existing business","New business"],wide:true,hint:"This is the first decision point"})+
@@ -309,10 +332,11 @@ function buildBio(){
  fld("category","Solution category",{select:CATS,wide:true})+
  fld("solution","Solution model / technology",{select:SOLS,wide:true})+
  fld("other","Other solution description",{type:"textarea",wide:true,hint:"Complete only when Other is selected"})+
- fld("specs","System specifications",{type:"textarea",wide:true,hint:"Capacity, size, configuration, key technical specifications"})+
- fld("equipment","Other equipment used in the solution",{type:"textarea",wide:true})+
+ table+
+ fld("equipment","Other equipment / accessories not listed above",{type:"textarea",wide:true,hint:"Optional: capture additional equipment, tools or accessories"})+
  fld("location","Location",{wide:true})+fld("phone","Contact number")+fld("date","Date of assessment",{type:"date"})+fld("officer","Assessed by");
- ["name","status","sector","category","solution","other","specs","equipment","location","phone","date","officer"].forEach(k=>bind(k));
+ ["name","status","sector","category","solution","other","equipment","location","phone","date","officer"].forEach(k=>bind(k));
+ document.querySelectorAll("[data-spec]").forEach(el=>el.addEventListener("input",()=>{S.systemSpecs[el.dataset.spec]=el.value;save()}));
 }
 function buildElig(){
  const qs=["Beneficiary identification / registration available?","Bank account available?","Existing loan default / repayment issue?","Willing to contribute to the solution?","Solution can be implemented at the proposed site?"];
@@ -320,31 +344,44 @@ function buildElig(){
  document.querySelectorAll("#elig .seg").forEach((seg,i)=>seg.querySelectorAll("button").forEach(btn=>btn.onclick=()=>{S.elig[i]=btn.textContent==="Yes";save();render()}));
 }
 function buildOps(){
- let h="";
- for(let i=0;i<3;i++)h+=`<tr><td>${REV[i]}</td><td><input class="input-cell rev-pre" data-i="${i}" type="number" min="0" step="1" value="${S.revenue[i]}"></td><td><input class="input-cell rev-post" data-i="${i}" type="number" min="0" step="1" value="${S.revenuePost[i]}"></td><td class="calc-cell" id="rd${i}">${E(S.revenuePost[i]-S.revenue[i])}</td><td>${COST[i]}</td><td><input class="input-cell cost-pre" data-i="${i}" type="number" min="0" step="1" value="${S.costs[i]}"></td><td><input class="input-cell cost-post" data-i="${i}" type="number" min="0" step="1" value="${S.costsPost[i]}"></td><td class="calc-cell" id="cd${i}">${E(S.costsPost[i]-S.costs[i])}</td></tr>`;
- for(let i=3;i<8;i++)h+=`<tr><td></td><td></td><td></td><td></td><td>${COST[i]}</td><td><input class="input-cell cost-pre" data-i="${i}" type="number" min="0" step="1" value="${S.costs[i]}"></td><td><input class="input-cell cost-post" data-i="${i}" type="number" min="0" step="1" value="${S.costsPost[i]}"></td><td class="calc-cell" id="cd${i}">${E(S.costsPost[i]-S.costs[i])}</td></tr>`;
- document.getElementById("opsRows").innerHTML=h;
- document.getElementById("opsTotal").innerHTML=`<tr><th>TOTAL</th><th>${E(S.revenue.reduce((a,b)=>a+b,0))}</th><th>${E(S.revenuePost.reduce((a,b)=>a+b,0))}</th><th>${E(S.revenuePost.reduce((a,b)=>a+b,0)-S.revenue.reduce((a,b)=>a+b,0))}</th><th>TOTAL COST</th><th>${E(S.costs.reduce((a,b)=>a+b,0))}</th><th>${E(S.costsPost.reduce((a,b)=>a+b,0))}</th><th>${E(S.costsPost.reduce((a,b)=>a+b,0)-S.costs.reduce((a,b)=>a+b,0))}</th></tr>`;
+ let r="";
+ for(let i=0;i<REV.length;i++) r+=`<tr><td>${REV[i]}</td><td><input class="rev-pre" data-i="${i}" type="number" min="0" step="1" value="${S.revenue[i]}"></td><td><input class="rev-post" data-i="${i}" type="number" min="0" step="1" value="${S.revenuePost[i]}"></td><td id="rd${i}">${E(S.revenuePost[i]-S.revenue[i])}</td></tr>`;
+ document.getElementById("revenueRows").innerHTML=r;
+ document.getElementById("revenueTotal").innerHTML=`<tr class="total"><td>Revenue per month</td><td>${E(S.revenue.reduce((a,b)=>a+b,0))}</td><td>${E(S.revenuePost.reduce((a,b)=>a+b,0))}</td><td>${E(S.revenuePost.reduce((a,b)=>a+b,0)-S.revenue.reduce((a,b)=>a+b,0))}</td></tr>`;
+ let c="";
+ for(let i=0;i<COST.length;i++) c+=`<tr><td>${COST[i]}</td><td><input class="cost-pre" data-i="${i}" type="number" min="0" step="1" value="${S.costs[i]}"></td><td><input class="cost-post" data-i="${i}" type="number" min="0" step="1" value="${S.costsPost[i]}"></td><td id="cd${i}">${E(S.costsPost[i]-S.costs[i])}</td></tr>`;
+ document.getElementById("costRows").innerHTML=c;
+ document.getElementById("costTotal").innerHTML=`<tr class="total"><td>Total cost</td><td>${E(S.costs.reduce((a,b)=>a+b,0))}</td><td>${E(S.costsPost.reduce((a,b)=>a+b,0))}</td><td>${E(S.costsPost.reduce((a,b)=>a+b,0)-S.costs.reduce((a,b)=>a+b,0))}</td></tr>`;
  document.querySelectorAll(".rev-pre").forEach(e=>e.oninput=()=>{S.revenue[e.dataset.i]=+e.value||0;save();render()});
  document.querySelectorAll(".rev-post").forEach(e=>e.oninput=()=>{S.revenuePost[e.dataset.i]=+e.value||0;save();render()});
  document.querySelectorAll(".cost-pre").forEach(e=>e.oninput=()=>{S.costs[e.dataset.i]=+e.value||0;save();render()});
  document.querySelectorAll(".cost-post").forEach(e=>e.oninput=()=>{S.costsPost[e.dataset.i]=+e.value||0;save();render()});
 }
 function buildFinance(){
- const html=fld("capex","Quoted solution cost",{type:"number",wide:true,hint:"Use the confirmed quotation"})+
- fld("cycles","Payment cycles per year",{type:"number",hint:"12 for monthly"})+
- fld("life","Expected solution life (years)",{type:"number"})+
- fld("contribAvailable","Beneficiary contribution available",{type:"number",wide:true})+
- fld("rate","Bank interest rate (annual)",{type:"number",step:"0.01",hint:"e.g. 0.16 = 16%"})+
- fld("subsidyPct","Programme subsidy share",{type:"number",step:"0.01"})+
- fld("loanPct","Bank loan share",{type:"number",step:"0.01"})+
- fld("newRepayShare","New business repayment share",{type:"number",step:"0.01",hint:"Only used for New business"})+
- fld("maintPct","Maintenance / recurring cost share",{type:"number",step:"0.01"})+
- `<div class="field locked"><div><label>Stress haircut</label><span class="u">fixed</span></div><input value="${P(S.stress)}" readonly></div>`+
- `<div class="field locked"><div><label>Repayment buffer (DSCR)</label><span class="u">fixed</span></div><input value="${S.dscr.toFixed(2)}" readonly></div>`;
+ const total=(+S.solutionCost||0)+(+S.energyCost||0)+(+S.otherCapitalCost||0);
+ S.capex=total;
+ const html=`
+ <div class="table-title">Capital costs</div>
+ <p class="table-note">Enter only the main cost components. Total cost is calculated automatically.</p>
+ <table class="simple-input-table"><thead><tr><th>Capital cost</th><th>Amount (₹)</th><th>Percentage</th></tr></thead><tbody>
+ <tr><td>Main solution / machine cost</td><td><input id="solutionCost" type="number" min="0" step="1" value="${S.solutionCost||0}"></td><td id="solutionCostPct">${total?P((S.solutionCost||0)/total):"0.0%"}</td></tr>
+ <tr><td>Solar / energy system cost</td><td><input id="energyCost" type="number" min="0" step="1" value="${S.energyCost||0}"></td><td id="energyCostPct">${total?P((S.energyCost||0)/total):"0.0%"}</td></tr>
+ <tr><td>Other costs</td><td><input id="otherCapitalCost" type="number" min="0" step="1" value="${S.otherCapitalCost||0}"></td><td id="otherCapitalCostPct">${total?P((S.otherCapitalCost||0)/total):"0.0%"}</td></tr>
+ <tr class="total"><td>Total cost</td><td id="totalCapex">${E(total)}</td><td>100.0%</td></tr></tbody></table>
+ <div class="table-title">Loan terms</div>
+ <table class="simple-input-table"><thead><tr><th>Loan term</th><th>Particulars</th><th>Units</th></tr></thead><tbody>
+ <tr><td>Interest rate</td><td><input id="rate" type="number" min="0" step="0.01" inputmode="decimal" value="${(S.rate*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% p.a.</td></tr>
+ <tr><td>Tenure</td><td><input id="life" type="number" min="1" step="1" value="${S.life}"></td><td>years</td></tr>
+ <tr><td>Programme subsidy</td><td><input id="subsidyPct" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.subsidyPct*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% of cost</td></tr>
+ <tr><td>Bank loan</td><td><input id="loanPct" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.loanPct*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% of cost</td></tr>
+ <tr><td>Beneficiary contribution available</td><td><input id="contribAvailable" type="number" min="0" step="1" value="${S.contribAvailable||0}"></td><td>₹</td></tr>
+ <tr><td>New business repayment share</td><td><input id="newRepayShare" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.newRepayShare*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% of post-profit</td></tr>
+ </tbody></table>
+ <div class="callout"><strong>Fixed assessment factors:</strong> stress haircut ${P(S.stress)} and repayment buffer (DSCR) ${S.dscr.toFixed(2)} are applied automatically.</div>`;
  document.getElementById("finance").innerHTML=html;
- ["capex","cycles","life","contribAvailable"].forEach(k=>bind(k,x=>+x||0));
- ["rate","subsidyPct","loanPct","newRepayShare","maintPct"].forEach(k=>bind(k,x=>+x||0));
+ ["solutionCost","energyCost","otherCapitalCost"].forEach(k=>document.getElementById(k).oninput=()=>{S[k]=+document.getElementById(k).value||0;S.capex=(S.solutionCost||0)+(S.energyCost||0)+(S.otherCapitalCost||0);save();render()});
+ ["rate","life","contribAvailable"].forEach(k=>document.getElementById(k).oninput=()=>{S[k]=+document.getElementById(k).value||0;save();render()});
+ ["subsidyPct","loanPct","newRepayShare"].forEach(k=>document.getElementById(k).oninput=()=>{S[k]=Math.max(0,Math.min(1,(+document.getElementById(k).value||0)/100));save();render()}); document.getElementById("rate").oninput=()=>{S.rate=Math.max(0,(+document.getElementById("rate").value||0)/100);save();render()};
 }
 function renderMetrics(m){
  const source=S.status==="Existing business"?"Additional operating profit":"Post-intervention operating profit × repayment share";
@@ -394,12 +431,12 @@ function scenarioRows(){
  }).join("");
  document.getElementById("scenarioRows").innerHTML=html;
  document.getElementById("customScenario").innerHTML=`
- <div class="field"><div><label>Subsidy %</label></div><input id="cs" type="number" step=".01" value="${S.subsidyPct}"></div>
- <div class="field"><div><label>Bank loan %</label></div><input id="cl" type="number" step=".01" value="${S.loanPct}"></div>
- <div class="field"><div><label>Interest % p.a.</label></div><input id="cr" type="number" step=".01" value="${S.rate}"></div>
+ <div class="field"><div><label>Subsidy %</label><span class="hint">Type any value</span></div><input id="cs" type="number" min="0" max="100" step=".01" inputmode="decimal" value="${(S.subsidyPct*100).toFixed(2).replace(/\.00$/,'')}"></div>
+ <div class="field"><div><label>Bank loan %</label><span class="hint">Type any value</span></div><input id="cl" type="number" min="0" max="100" step=".01" inputmode="decimal" value="${(S.loanPct*100).toFixed(2).replace(/\.00$/,'')}"></div>
+ <div class="field"><div><label>Interest % p.a.</label><span class="hint">Type any value</span></div><input id="cr" type="number" min="0" step=".01" inputmode="decimal" value="${(S.rate*100).toFixed(2).replace(/\.00$/,'')}"></div>
  <div class="field"><div><label>Tenure (years)</label></div><input id="ct" type="number" value="${Math.min(5,S.life)}"></div>
  <div class="callout" id="customOut"></div>`;
- const update=()=>{const sub=+document.getElementById("cs").value||0, loanp=+document.getElementById("cl").value||0, rate=+document.getElementById("cr").value||0, years=+document.getElementById("ct").value||0, loan=S.capex*loanp, emi=loan>0?pmt(rate/S.cycles,years*S.cycles,loan):0;document.getElementById("customOut").innerHTML=`<strong>Result:</strong> Subsidy ${E(S.capex*sub)}, bank loan ${E(loan)}, beneficiary contribution ${E(Math.max(0,S.capex-S.capex*sub-loan))}, EMI ${E(emi)}. <b>${emi<=m.maxEmi&&years<=S.life?"Affordable under current repayment capacity.":"Not affordable under current repayment capacity."}</b>`};
+ const update=()=>{const sub=Math.max(0,Math.min(1,(+document.getElementById("cs").value||0)/100)), loanp=Math.max(0,Math.min(1,(+document.getElementById("cl").value||0)/100)), rate=Math.max(0,(+document.getElementById("cr").value||0)/100), years=+document.getElementById("ct").value||0, loan=S.capex*loanp, emi=loan>0?pmt(rate/S.cycles,years*S.cycles,loan):0;document.getElementById("customOut").innerHTML=`<strong>Result:</strong> Subsidy ${E(S.capex*sub)}, bank loan ${E(loan)}, beneficiary contribution ${E(Math.max(0,S.capex-S.capex*sub-loan))}, EMI ${E(emi)}. <b>${emi<=m.maxEmi&&years<=S.life?"Affordable under current repayment capacity.":"Not affordable under current repayment capacity."}</b>`};
  ["cs","cl","cr","ct"].forEach(id=>document.getElementById(id).oninput=update); update();
 }
 function exec(){
@@ -422,7 +459,7 @@ document.getElementById("print").onclick=()=>window.print();
 document.getElementById("reset").onclick=()=>{if(confirm("Clear this assessment and start again?")){S=structuredClone(BLANK);save();render()}};
 document.getElementById("download").onclick=()=>{
  const m=calc(), rows=[
- ["Field","Value"],["Beneficiary",S.name],["Business status",S.status],["Sector",S.sector],["Solution category",S.category],["Solution model",S.solution],["Other solution",S.other],["System specifications",S.specs],["Other equipment",S.equipment],["Pre revenue / month",m.preRev],["Post revenue / month",m.postRev],["Pre operating profit / month",m.preProfit],["Post operating profit / month",m.postProfit],["Profit improvement / month",m.improvement],["Repayment source",S.status==="Existing business"?"Additional operating profit":"Post-intervention profit × repayment share"],["Maximum affordable EMI",m.maxEmi],["Subsidy",m.subsidy],["Bank loan",m.loan],["Beneficiary contribution",m.self],["Estimated EMI",m.emi],["Result",m.result]];
+ ["Field","Value"],["Beneficiary",S.name],["Business status",S.status],["Sector",S.sector],["Solution category",S.category],["Solution model",S.solution],["Other solution",S.other],["Panel capacity",S.systemSpecs.panelCapacity],["Panel quantity",S.systemSpecs.panelQty],["Total PV capacity",S.systemSpecs.totalPvCapacity],["Battery capacity",S.systemSpecs.batteryCapacity],["Battery quantity",S.systemSpecs.batteryQty],["Inverter capacity",S.systemSpecs.inverterCapacity],["Controller / charge controller",S.systemSpecs.controller],["Pump / motor capacity",S.systemSpecs.pumpMotorCapacity],["Storage / tank capacity",S.systemSpecs.storageCapacity],["Main equipment capacity",S.systemSpecs.equipmentCapacity],["Mounting / installation",S.systemSpecs.mounting],["Wiring & protection",S.systemSpecs.wiringProtection],["Other technical specifications",S.systemSpecs.other],["Other equipment",S.equipment],["Pre revenue / month",m.preRev],["Post revenue / month",m.postRev],["Pre operating profit / month",m.preProfit],["Post operating profit / month",m.postProfit],["Profit improvement / month",m.improvement],["Repayment source",S.status==="Existing business"?"Additional operating profit":"Post-intervention profit × repayment share"],["Maximum affordable EMI",m.maxEmi],["Subsidy",m.subsidy],["Bank loan",m.loan],["Beneficiary contribution",m.self],["Estimated EMI",m.emi],["Result",m.result]];
  const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="G7H_VE_Selco_financing_assessment.csv";a.click();URL.revokeObjectURL(a.href)
 };
