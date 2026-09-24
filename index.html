@@ -14,9 +14,9 @@
   --caution:#8A5605; --caution-soft:#FCEEDA; --caution-line:#E2B269;
   --fail:#9E252A; --fail-soft:#FBE4E4; --fail-line:#E09A9C;
   --shadow:0 1px 2px rgba(16,23,34,.05), 0 6px 20px -12px rgba(16,23,34,.28);
-  --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
-  --disp:'Archivo','Helvetica Neue',Arial,sans-serif;
-  --body:'Source Sans 3','Helvetica Neue',Arial,sans-serif;
+  --mono:'Times New Roman',Times,serif;
+  --disp:'Times New Roman',Times,serif;
+  --body:'Times New Roman',Times,serif;
 }
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
   --ground:#0C1118; --surface:#141C27; --surface-2:#19222E; --sunken:#0A0F15;
@@ -213,6 +213,7 @@ svg{display:block;width:100%;height:auto}
 .input-cell{background:var(--ochre-soft)!important}.calc-cell{background:var(--sunken)!important}
 .callout{padding:12px 14px;border:1px solid var(--line);background:var(--surface-2);border-radius:6px;margin:10px 0}.callout strong{font-family:var(--disp)}
 .simple-input-table{width:100%;border-collapse:collapse;margin:8px 0 14px}.simple-input-table th,.simple-input-table td{border:1px solid var(--line);padding:8px 10px}.simple-input-table th{background:var(--accent);color:#fff;font-family:var(--disp);font-size:12px;text-align:left}.simple-input-table td:first-child{font-weight:600;color:var(--ink-2)}.simple-input-table input,.simple-input-table select{width:100%;padding:7px 8px;border:1px solid var(--line-2);border-radius:4px;background:var(--ochre-soft);font-family:var(--mono);font-size:13px;color:var(--ink);text-align:right}.simple-input-table input[readonly]{background:var(--surface-2);color:var(--ink-2)}.table-title{font-family:var(--disp);font-size:13px;font-weight:700;margin:14px 0 5px;color:var(--ink)}.table-note{font-size:12px;color:var(--ink-3);margin:0 0 7px}.simple-input-table .total td{font-weight:700;background:var(--surface-2)}
+.pre-cost-cell{display:table-cell}
 
 .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{border:1px solid var(--line);border-radius:6px;padding:12px;background:var(--surface)}.metric .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}.metric .value{font:600 20px var(--mono);margin-top:4px}.metric .sub{font-size:12px;color:var(--ink-2);margin-top:3px}
 .decision{padding:14px;border-radius:6px;border:1px solid var(--line);background:var(--surface)}.decision h3{font-size:17px}.decision p{margin:5px 0;color:var(--ink-2)}
@@ -225,7 +226,7 @@ svg{display:block;width:100%;height:auto}
 <div><div class="eyebrow">Field assessment · development finance</div>
 <h1>G7H / VE / Selco Financing Assessment</h1>
 <p>Simple field capture of the beneficiary's current situation and expected situation after the solution. The tool then tests affordability and financing options.</p></div>
-<div class="mast-side"><button class="btn" id="download">Download</button><button class="btn" id="print">Print / PDF</button><button class="btn" id="reset">Clear</button></div>
+<div class="mast-side"><button class="btn" id="download">Download Assessment</button><button class="btn" id="downloadBackend">Download Backend Calculations</button><button class="btn" id="print">Print / PDF</button><button class="btn" id="reset">Clear</button></div>
 </div>
 <div class="tabs" role="tablist">
 <button class="tab" id="tab-a" role="tab" aria-selected="true">1. Field Assessment</button>
@@ -242,7 +243,7 @@ svg{display:block;width:100%;height:auto}
 <section class="panel"><div class="phead"><span class="sec">1</span><h2>Beneficiary & solution</h2><span class="hint">Start here</span></div><div class="pbody" id="bio"></div></section>
 <section class="panel"><div class="phead"><span class="sec">2</span><h2>Readiness</h2><span class="hint">Keep questions simple</span></div><div class="pbody" id="elig"></div></section>
 <section class="panel"><div class="phead"><span class="sec">3</span><h2>Pre-intervention → Post-intervention</h2><span class="hint">Monthly operating values</span></div><div class="pbody">
-<div class="callout"><strong>Ask the beneficiary:</strong> “What is happening now?” and “What do you expect after this solution?” Use the same period for both columns. If a line does not apply, enter 0.</div>
+<div class="callout">Enter the business values for the same period, preferably per month. For a new business, pre-intervention costs are not required. Enter 0 where a cost or revenue line does not apply.</div>
 <div class="table-title">Revenue</div>
 <table class="simple-input-table"><thead><tr><th>Revenue</th><th>Pre-intervention / month</th><th>Post-intervention / month</th><th>Change</th></tr></thead><tbody id="revenueRows"></tbody><tfoot id="revenueTotal"></tfoot></table>
 <div class="table-title">Operating costs</div>
@@ -272,8 +273,8 @@ svg{display:block;width:100%;height:auto}
 <script>
 "use strict";
 const BLANK={name:"",status:"",sector:"",category:"",solution:"",other:"",specs:"",equipment:"",location:"",phone:"",date:new Date().toISOString().slice(0,10),officer:"",
-elig:[null,null,null,null,null], revenue:[0,0,0], revenuePost:[0,0,0], costs:[0,0,0,0,0,0,0,0], costsPost:[0,0,0,0,0,0,0,0],
-capex:0,solutionCost:0,energyCost:0,otherCapitalCost:0,cycles:12,life:10,contribAvailable:0,rate:.16,subsidyPct:.30,loanPct:.50,newRepayShare:.50,maintPct:.02,stress:.25,dscr:1.30,
+elig:[null,null,null,null,null], revenue:[0,0,0], revenuePost:[0,0,0], costs:[0,0,0,0,0,0,0,0,0], costsPost:[0,0,0,0,0,0,0,0,0],
+capex:0,solutionCost:0,energyCost:0,otherCapitalCost:0,cycles:12,life:10,contribAvailable:0,rate:.16,subsidyPct:.30,loanPct:.50,newRepayShare:.40,maintPct:.02,existingExtraExpense:0,newHouseholdExpense:0,stress:.25,dscr:1.30,
 systemSpecs:{panelCapacity:"",panelQty:"",totalPvCapacity:"",batteryCapacity:"",batteryQty:"",inverterCapacity:"",controller:"",pumpMotorCapacity:"",storageCapacity:"",equipmentCapacity:"",mounting:"",wiringProtection:"",other:""}};
 let S=JSON.parse(localStorage.getItem("g7h-finance-state")||"null")||structuredClone(BLANK);
 S.systemSpecs=Object.assign(structuredClone(BLANK.systemSpecs),S.systemSpecs||{});
@@ -287,10 +288,13 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&
 function pmt(r,n,pv){return n<=0?NaN:(r?pv*r/(1-Math.pow(1+r,-n)):pv/n)}
 function pv(r,n,p){return n<=0?NaN:(r?p*(1-Math.pow(1+r,-n))/r:p*n)}
 function calc(){
- const preRev=S.revenue.reduce((a,b)=>a+ +b,0), postRev=S.revenuePost.reduce((a,b)=>a+ +b,0);
- const preCost=S.costs.reduce((a,b)=>a+ +b,0), postCost=S.costsPost.reduce((a,b)=>a+ +b,0)+(S.capex*S.maintPct/12);
- const preProfit=preRev-preCost, postProfit=postRev-postCost, improvement=postProfit-preProfit;
- const repaymentBase=S.status==="Existing business"?improvement:postProfit*S.newRepayShare;
+ const preRev=S.status==="Existing business"?S.revenue.reduce((a,b)=>a+ +b,0):0, postRev=S.revenuePost.reduce((a,b)=>a+ +b,0);
+ const preCost=S.status==="Existing business"?S.costs.reduce((a,b)=>a+ +b,0):0;
+ const maintenance=S.capex*S.maintPct/12;
+ const postBusinessCost=S.costsPost.reduce((a,b)=>a+ +b,0)+maintenance+(S.status==="Existing business"?(+S.existingExtraExpense||0):0);
+ const preProfit=preRev-preCost, postProfit=postRev-postBusinessCost, improvement=postProfit-preProfit;
+ const livelihoodAdjustedProfit=Math.max(0,postProfit-(S.status==="New business"?(+S.newHouseholdExpense||0):0));
+ const repaymentBase=S.status==="Existing business"?Math.max(0,improvement):livelihoodAdjustedProfit*0.40;
  const annual=repaymentBase*12;
  const maxEmi=Math.max(0,(repaymentBase*(1-S.stress))/S.dscr);
  const n=S.cycles*S.life, r=S.rate/S.cycles;
@@ -307,7 +311,7 @@ function calc(){
  else if(!S.capex) result="ENTER SOLUTION COST";
  else if(!within||loanCap>0&&maxEmi<=loanCap*r) result="REVISE FINANCING";
  else result="FINANCING CAN BE CONSIDERED";
- return {preRev,postRev,preCost,postCost,preProfit,postProfit,improvement,repaymentBase,annual,maxEmi,subsidy,loanCap,affordableLoan,loan,self,emi,within,contributionGap,result};
+ return {preRev,postRev,preCost,postBusinessCost,postCost:postBusinessCost,maintenance,preProfit,postProfit,improvement,livelihoodAdjustedProfit,repaymentBase,annual,maxEmi,subsidy,loanCap,affordableLoan,loan,self,emi,within,contributionGap,result};
 }
 function fld(key,label,opts={}){
  const v=S[key]??"";
@@ -345,17 +349,35 @@ function buildElig(){
 }
 function buildOps(){
  let r="";
- for(let i=0;i<REV.length;i++) r+=`<tr><td>${REV[i]}</td><td><input class="rev-pre" data-i="${i}" type="number" min="0" step="1" value="${S.revenue[i]}"></td><td><input class="rev-post" data-i="${i}" type="number" min="0" step="1" value="${S.revenuePost[i]}"></td><td id="rd${i}">${E(S.revenuePost[i]-S.revenue[i])}</td></tr>`;
+ for(let i=0;i<REV.length;i++) r+=`<tr><td>${REV[i]}</td><td class="pre-rev-cell"><input class="rev-pre" data-i="${i}" type="number" min="0" step="1" value="${S.revenue[i]}"></td><td><input class="rev-post" data-i="${i}" type="number" min="0" step="1" value="${S.revenuePost[i]}"></td><td id="rd${i}">${E(S.revenuePost[i]-S.revenue[i])}</td></tr>`;
  document.getElementById("revenueRows").innerHTML=r;
- document.getElementById("revenueTotal").innerHTML=`<tr class="total"><td>Revenue per month</td><td>${E(S.revenue.reduce((a,b)=>a+b,0))}</td><td>${E(S.revenuePost.reduce((a,b)=>a+b,0))}</td><td>${E(S.revenuePost.reduce((a,b)=>a+b,0)-S.revenue.reduce((a,b)=>a+b,0))}</td></tr>`;
+ const existing=S.status==="Existing business";
+ const revTable=document.getElementById("revenueRows").closest("table");
+ if(revTable) revTable.querySelector("thead tr").innerHTML=existing?'<th>Revenue</th><th>Pre-intervention / month</th><th>Post-intervention / month</th><th>Change</th>':'<th>Revenue</th><th>Post-intervention / month</th>';
+ document.querySelectorAll(".pre-rev-cell").forEach(el=>el.style.display=existing?"":"none");
+ document.querySelectorAll("#revenueRows td:last-child").forEach(el=>el.style.display=existing?"":"none");
+ document.getElementById("revenueTotal").innerHTML=existing?`<tr class="total"><td>Revenue per month</td><td>${E(S.revenue.reduce((a,b)=>a+b,0))}</td><td>${E(S.revenuePost.reduce((a,b)=>a+b,0))}</td><td>${E(S.revenuePost.reduce((a,b)=>a+b,0)-S.revenue.reduce((a,b)=>a+b,0))}</td></tr>`:`<tr class="total"><td>Revenue per month</td><td>${E(S.revenuePost.reduce((a,b)=>a+b,0))}</td></tr>`;
  let c="";
- for(let i=0;i<COST.length;i++) c+=`<tr><td>${COST[i]}</td><td><input class="cost-pre" data-i="${i}" type="number" min="0" step="1" value="${S.costs[i]}"></td><td><input class="cost-post" data-i="${i}" type="number" min="0" step="1" value="${S.costsPost[i]}"></td><td id="cd${i}">${E(S.costsPost[i]-S.costs[i])}</td></tr>`;
+ for(let i=0;i<COST.length;i++) c+=`<tr><td>${COST[i]}</td><td class="pre-cost-cell"><input class="cost-pre" data-i="${i}" type="number" min="0" step="1" value="${S.costs[i]}"></td><td><input class="cost-post" data-i="${i}" type="number" min="0" step="1" value="${S.costsPost[i]}"></td><td class="cost-change-cell" id="cd${i}">${E(S.costsPost[i]-S.costs[i])}</td></tr>`;
+ if(existing) c+=`<tr><td>Additional business-specific expenses</td><td class="pre-cost-cell"><input class="existing-extra-pre" type="number" min="0" step="1" value="0"></td><td><input id="existingExtraExpenseOps" type="number" min="0" step="1" value="${S.existingExtraExpense||0}"></td><td class="cost-change-cell">${E(S.existingExtraExpense||0)}</td></tr>`;
+ c+=`<tr><td>Maintenance on new solution</td>${existing?'<td class="pre-cost-cell">0</td>':''}<td><input type="number" value="${Math.round(S.capex*S.maintPct/12)}" readonly></td>${existing?'<td class="cost-change-cell">'+E(S.capex*S.maintPct/12)+'</td>':''}</tr>`;
  document.getElementById("costRows").innerHTML=c;
- document.getElementById("costTotal").innerHTML=`<tr class="total"><td>Total cost</td><td>${E(S.costs.reduce((a,b)=>a+b,0))}</td><td>${E(S.costsPost.reduce((a,b)=>a+b,0))}</td><td>${E(S.costsPost.reduce((a,b)=>a+b,0)-S.costs.reduce((a,b)=>a+b,0))}</td></tr>`;
+ const costTable=document.getElementById("costRows").closest("table");
+ if(costTable) costTable.querySelector("thead tr").innerHTML=existing?'<th>Cost</th><th>Pre-intervention / month</th><th>Post-intervention / month</th><th>Change</th>':'<th>Cost</th><th>Post-intervention / month</th>';
+ document.getElementById("costTotal").innerHTML=existing?`<tr class="total"><td>Total business cost</td><td>${E(S.costs.reduce((a,b)=>a+b,0))}</td><td>${E(S.costsPost.reduce((a,b)=>a+b,0)+S.capex*S.maintPct/12+(S.existingExtraExpense||0))}</td><td>${E((S.costsPost.reduce((a,b)=>a+b,0)+S.capex*S.maintPct/12+(S.existingExtraExpense||0))-S.costs.reduce((a,b)=>a+b,0))}</td></tr>`:`<tr class="total"><td>Total business cost</td><td>${E(S.costsPost.reduce((a,b)=>a+b,0)+S.capex*S.maintPct/12)}</td></tr>`;
  document.querySelectorAll(".rev-pre").forEach(e=>e.oninput=()=>{S.revenue[e.dataset.i]=+e.value||0;save();render()});
  document.querySelectorAll(".rev-post").forEach(e=>e.oninput=()=>{S.revenuePost[e.dataset.i]=+e.value||0;save();render()});
  document.querySelectorAll(".cost-pre").forEach(e=>e.oninput=()=>{S.costs[e.dataset.i]=+e.value||0;save();render()});
  document.querySelectorAll(".cost-post").forEach(e=>e.oninput=()=>{S.costsPost[e.dataset.i]=+e.value||0;save();render()});
+ const ex=document.getElementById("existingExtraExpenseOps"); if(ex) ex.oninput=()=>{S.existingExtraExpense=+ex.value||0;save();render()};
+ if(!existing) S.existingExtraExpense=0;
+ if(S.status==="New business") {
+  const host=document.getElementById("costRows").closest("table").parentElement;
+  let box=document.getElementById("newLivelihoodBox");
+  if(!box){box=document.createElement("div");box.id="newLivelihoodBox";host.appendChild(box)}
+  box.innerHTML=`<div class="table-title">Essential household / livelihood expenses</div><p class="table-note">For a new business, enter monthly family, medical and other essential household expenses. These are not treated as business costs; they are protected before calculating the repayment amount.</p><table class="simple-input-table"><thead><tr><th>Expense</th><th>Amount (₹ / month)</th></tr></thead><tbody><tr><td>Family / medical / other essential expenses</td><td><input id="newHouseholdExpenseOps" type="number" min="0" step="1" value="${S.newHouseholdExpense||0}"></td></tr></tbody></table>`;
+  document.getElementById("newHouseholdExpenseOps").oninput=()=>{S.newHouseholdExpense=+document.getElementById("newHouseholdExpenseOps").value||0;save();render()};
+ } else { const box=document.getElementById("newLivelihoodBox"); if(box) box.remove(); S.newHouseholdExpense=0; }
 }
 function buildFinance(){
  const total=(+S.solutionCost||0)+(+S.energyCost||0)+(+S.otherCapitalCost||0);
@@ -374,29 +396,32 @@ function buildFinance(){
  <tr><td>Tenure</td><td><input id="life" type="number" min="1" step="1" value="${S.life}"></td><td>years</td></tr>
  <tr><td>Programme subsidy</td><td><input id="subsidyPct" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.subsidyPct*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% of cost</td></tr>
  <tr><td>Bank loan</td><td><input id="loanPct" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.loanPct*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% of cost</td></tr>
- <tr><td>Beneficiary contribution available</td><td><input id="contribAvailable" type="number" min="0" step="1" value="${S.contribAvailable||0}"></td><td>₹</td></tr>
- <tr><td>New business repayment share</td><td><input id="newRepayShare" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.newRepayShare*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% of post-profit</td></tr>
- </tbody></table>
+ <tr><td>End-user contribution available</td><td><input id="contribAvailable" type="number" min="0" step="1" value="${S.contribAvailable||0}"></td><td>₹</td></tr>
+ <tr><td>Required end-user contribution</td><td id="requiredContribution">${E(Math.max(0,total-(total*S.subsidyPct)-Math.min(total*S.loanPct,Math.max(0,total-total*S.subsidyPct))) )}</td><td>₹ (calculated)</td></tr>
+ <tr><td>Maintenance on new solution</td><td><input id="maintPct" type="number" min="0" step="0.01" inputmode="decimal" value="${(S.maintPct*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% of cost / year</td></tr>
+ <tr><td>New business profit considered for repayment</td><td><input id="newRepayShare" type="number" value="40" readonly></td><td>% after essential household expenses (fixed)</td></tr>
+  </tbody></table>
  <div class="callout"><strong>Fixed assessment factors:</strong> stress haircut ${P(S.stress)} and repayment buffer (DSCR) ${S.dscr.toFixed(2)} are applied automatically.</div>`;
  document.getElementById("finance").innerHTML=html;
  ["solutionCost","energyCost","otherCapitalCost"].forEach(k=>document.getElementById(k).oninput=()=>{S[k]=+document.getElementById(k).value||0;S.capex=(S.solutionCost||0)+(S.energyCost||0)+(S.otherCapitalCost||0);save();render()});
- ["rate","life","contribAvailable"].forEach(k=>document.getElementById(k).oninput=()=>{S[k]=+document.getElementById(k).value||0;save();render()});
- ["subsidyPct","loanPct","newRepayShare"].forEach(k=>document.getElementById(k).oninput=()=>{S[k]=Math.max(0,Math.min(1,(+document.getElementById(k).value||0)/100));save();render()}); document.getElementById("rate").oninput=()=>{S.rate=Math.max(0,(+document.getElementById("rate").value||0)/100);save();render()};
+ ["rate","life","contribAvailable","maintPct"].forEach(k=>document.getElementById(k).oninput=()=>{S[k]=+document.getElementById(k).value||0;save();render()});
+ ["subsidyPct","loanPct"].forEach(k=>document.getElementById(k).oninput=()=>{S[k]=Math.max(0,Math.min(1,(+document.getElementById(k).value||0)/100));save();render()});
 }
 function renderMetrics(m){
- const source=S.status==="Existing business"?"Additional operating profit":"Post-intervention operating profit × repayment share";
+ const source=S.status==="Existing business"?"Additional operating profit after all additional business-specific expenses":"40% of post-intervention profit after essential household expenses";
  document.getElementById("metrics").innerHTML=[
- ["Pre-intervention profit / month",E(m.preProfit),"Before solution"],
+ ["Pre-intervention profit / month",S.status==="New business"?"N/A":E(m.preProfit),S.status==="New business"?"Not required for a new business":"Before solution"],
  ["Post-intervention profit / month",E(m.postProfit),"After solution, before new financing"],
  ["Repayment source",E(m.repaymentBase),"Amount used before stress & DSCR"],
+ ["Maintenance on solution",E(S.capex*S.maintPct/12),"per month"],
  ["Maximum affordable EMI",E(m.maxEmi),"After stress haircut + DSCR"],
  ["Recommended subsidy",E(m.subsidy),"Programme contribution"],
  ["Recommended bank loan",E(m.loan),"Loan sized to affordability"],
- ["Beneficiary contribution",E(m.self),"Balance of solution cost"],
+ ["End-user contribution",E(m.self),"Balance of solution cost"],
  ["Estimated EMI",E(m.emi),"At full solution life"]
  ].map(x=>`<div class="metric"><div class="label">${x[0]}</div><div class="value">${x[1]}</div><div class="sub">${x[2]}</div></div>`).join("");
  const gap=m.contributionGap>0?`The required beneficiary contribution is ${E(m.contributionGap)} above the amount entered as available.`:"The beneficiary contribution is within the amount entered as available.";
- const why=!S.status?"Select Existing business or New business first.":S.status==="Existing business"?`Repayment is linked only to the improvement in operating profit after the solution. ${source}.`: `Repayment is limited to ${P(S.newRepayShare)} of post-intervention operating profit so the remaining profit supports the beneficiary's livelihood.`;
+ const why=!S.status?"Select Existing business or New business first.":S.status==="Existing business"?`Repayment is linked to the improvement in operating profit after the solution, including additional business-specific expenses. ${source}.`: `Repayment is limited to 40% of post-intervention profit after essential household expenses, leaving the remaining amount for livelihood needs.`;
  document.getElementById("decision").innerHTML=`<h3>${m.result}</h3><p>${why}</p><p>${gap}</p><p><strong>Suggested starting structure:</strong> subsidy ${P(S.subsidyPct)}, bank loan sized within ${P(S.loanPct)} maximum, and the balance as beneficiary contribution. Use Scenario Analysis to test alternatives.</p>`;
  document.getElementById("vTag").textContent=m.result;
  document.getElementById("vWhy").textContent=why;
@@ -440,7 +465,7 @@ function scenarioRows(){
  ["cs","cl","cr","ct"].forEach(id=>document.getElementById(id).oninput=update); update();
 }
 function exec(){
- const m=calc(), source=S.status==="Existing business"?"Additional profit generated by the existing business":"Only "+P(S.newRepayShare)+" of post-intervention profit";
+ const m=calc(), source=S.status==="Existing business"?"Additional profit generated by the existing business after additional business-specific expenses":"40% of post-intervention profit after essential household expenses";
  document.getElementById("exec").innerHTML=`<div class="summary-grid">
  <div class="metric"><div class="label">Business</div><div class="value" style="font-size:16px">${esc(S.status||"—")}</div><div class="sub">${esc(S.name||"Beneficiary")}</div></div>
  <div class="metric"><div class="label">Profit before</div><div class="value">${E(m.preProfit)}</div><div class="sub">per month</div></div>
@@ -449,7 +474,7 @@ function exec(){
  <div class="metric"><div class="label">Maximum EMI</div><div class="value">${E(m.maxEmi)}</div><div class="sub">after stress + DSCR</div></div>
  <div class="metric"><div class="label">Estimated EMI</div><div class="value">${E(m.emi)}</div><div class="sub">recommended loan</div></div>
  </div>
- <div class="decision" style="margin-top:14px"><h3>Financing structure</h3><p>Solution cost: <strong>${E(S.capex)}</strong></p><p>Programme subsidy: <strong>${E(m.subsidy)}</strong> · Bank loan: <strong>${E(m.loan)}</strong> · Beneficiary contribution: <strong>${E(m.self)}</strong></p><p>Repayment source: <strong>${source}</strong></p><p>Conclusion: <strong>${m.result}</strong></p></div>`;
+ <div class="decision" style="margin-top:14px"><h3>Financing structure</h3><p>Solution cost: <strong>${E(S.capex)}</strong></p><p>Programme subsidy: <strong>${E(m.subsidy)}</strong> · Bank loan: <strong>${E(m.loan)}</strong> · End-user contribution: <strong>${E(m.self)}</strong></p><p>Repayment source: <strong>${source}</strong></p><p>Conclusion: <strong>${m.result}</strong></p></div>`;
 }
 function save(){localStorage.setItem("g7h-finance-state",JSON.stringify(S))}
 function render(){buildBio();buildElig();buildOps();buildFinance();const m=calc();renderMetrics(m);renderChecks(m);scenarioRows();exec()}
@@ -459,9 +484,49 @@ document.getElementById("print").onclick=()=>window.print();
 document.getElementById("reset").onclick=()=>{if(confirm("Clear this assessment and start again?")){S=structuredClone(BLANK);save();render()}};
 document.getElementById("download").onclick=()=>{
  const m=calc(), rows=[
- ["Field","Value"],["Beneficiary",S.name],["Business status",S.status],["Sector",S.sector],["Solution category",S.category],["Solution model",S.solution],["Other solution",S.other],["Panel capacity",S.systemSpecs.panelCapacity],["Panel quantity",S.systemSpecs.panelQty],["Total PV capacity",S.systemSpecs.totalPvCapacity],["Battery capacity",S.systemSpecs.batteryCapacity],["Battery quantity",S.systemSpecs.batteryQty],["Inverter capacity",S.systemSpecs.inverterCapacity],["Controller / charge controller",S.systemSpecs.controller],["Pump / motor capacity",S.systemSpecs.pumpMotorCapacity],["Storage / tank capacity",S.systemSpecs.storageCapacity],["Main equipment capacity",S.systemSpecs.equipmentCapacity],["Mounting / installation",S.systemSpecs.mounting],["Wiring & protection",S.systemSpecs.wiringProtection],["Other technical specifications",S.systemSpecs.other],["Other equipment",S.equipment],["Pre revenue / month",m.preRev],["Post revenue / month",m.postRev],["Pre operating profit / month",m.preProfit],["Post operating profit / month",m.postProfit],["Profit improvement / month",m.improvement],["Repayment source",S.status==="Existing business"?"Additional operating profit":"Post-intervention profit × repayment share"],["Maximum affordable EMI",m.maxEmi],["Subsidy",m.subsidy],["Bank loan",m.loan],["Beneficiary contribution",m.self],["Estimated EMI",m.emi],["Result",m.result]];
+ ["Field","Value"],["Beneficiary",S.name],["Business status",S.status],["Sector",S.sector],["Solution category",S.category],["Solution model",S.solution],["Other solution",S.other],["Panel capacity",S.systemSpecs.panelCapacity],["Panel quantity",S.systemSpecs.panelQty],["Total PV capacity",S.systemSpecs.totalPvCapacity],["Battery capacity",S.systemSpecs.batteryCapacity],["Battery quantity",S.systemSpecs.batteryQty],["Inverter capacity",S.systemSpecs.inverterCapacity],["Controller / charge controller",S.systemSpecs.controller],["Pump / motor capacity",S.systemSpecs.pumpMotorCapacity],["Storage / tank capacity",S.systemSpecs.storageCapacity],["Main equipment capacity",S.systemSpecs.equipmentCapacity],["Mounting / installation",S.systemSpecs.mounting],["Wiring & protection",S.systemSpecs.wiringProtection],["Other technical specifications",S.systemSpecs.other],["Other equipment",S.equipment],["Pre revenue / month",m.preRev],["Post revenue / month",m.postRev],["Pre operating profit / month",m.preProfit], ["Existing business additional expenses / month",S.existingExtraExpense], ["New business essential household expenses / month",S.newHouseholdExpense], ["Maintenance / month",S.capex*S.maintPct/12],["Post operating profit / month",m.postProfit],["Profit improvement / month",m.improvement],["Repayment source",S.status==="Existing business"?"Additional operating profit":"Post-intervention profit × repayment share"],["Maximum affordable EMI",m.maxEmi],["Subsidy",m.subsidy],["Bank loan",m.loan],["End-user contribution",m.self],["Estimated EMI",m.emi],["Result",m.result]];
  const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="G7H_VE_Selco_financing_assessment.csv";a.click();URL.revokeObjectURL(a.href)
+};
+document.getElementById("downloadBackend").onclick=()=>{
+ const m=calc();
+ const rows=[
+ ["Backend calculation item","Value / formula"],
+ ["Business status",S.status],
+ ["Solution cost",S.capex],
+ ["Pre revenue / month",m.preRev],
+ ["Post revenue / month",m.postRev],
+ ["Pre business cost / month",m.preCost],
+ ["Post business cost before maintenance / month",S.costsPost.reduce((a,b)=>a+b,0)+(S.status==="Existing business"?(+S.existingExtraExpense||0):0)],
+ ["Maintenance rate",S.maintPct],
+ ["Maintenance / month",m.maintenance],
+ ["New business essential household expenses / month",S.newHouseholdExpense],
+ ["Pre profit / month",m.preProfit],
+ ["Post profit / month",m.postProfit],
+ ["Profit improvement / month",m.improvement],
+ ["New business protected profit after household expenses",m.livelihoodAdjustedProfit],
+ ["Repayment base",m.repaymentBase],
+ ["Stress haircut",S.stress],
+ ["DSCR",S.dscr],
+ ["Maximum affordable EMI",m.maxEmi],
+ ["Subsidy rate",S.subsidyPct],
+ ["Subsidy amount",m.subsidy],
+ ["Bank loan rate of cost",S.loanPct],
+ ["Bank loan amount",m.loan],
+ ["End-user contribution required",m.self],
+ ["End-user contribution available",S.contribAvailable],
+ ["Contribution gap",m.contributionGap],
+ ["Interest rate p.a.",S.rate],
+ ["Tenure years",S.life],
+ ["Estimated EMI",m.emi],
+ ["Affordable loan PV formula","PV = EMI × (1-(1+r)^-n) / r"],
+ ["EMI formula","PMT based on periodic interest rate and number of instalments"],
+ ["Existing business repayment rule","100% of positive improvement in monthly operating profit after additional business-specific expenses"],
+ ["New business repayment rule","40% of post-intervention profit after essential household/family/medical expenses"],
+ ["Result",m.result]
+ ];
+ const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="G7H_VE_Selco_backend_calculations.csv";a.click();URL.revokeObjectURL(a.href);
 };
 render();
 </script>

@@ -1,21 +1,16 @@
-# G7H / VE / Selco Financing Assessment — Revised
+# G7H / VE / Selco Financing Assessment
 
-This version is designed for field use.
+Field-friendly financing assessment tool for G7H / VE / Selco teams.
 
-## Main changes
-1. First decision: Existing business vs New business.
-2. Solution category + solution model dropdowns, with Other description.
-3. System specifications and other equipment fields.
-4. Pre-intervention and post-intervention monthly revenue/cost capture.
-5. Existing business repayment source: incremental operating profit.
-6. New business repayment source: selected share of post-intervention operating profit, preserving livelihood.
-7. Existing stress haircut and repayment buffer (DSCR) are retained.
-8. Financing language uses “Bank” rather than “Coop Bank”.
-9. Three pages:
-   - Field Assessment
-   - Scenario Analysis
-   - Executive Summary
-10. Download CSV and Print/PDF controls.
-11. Scenario analysis lets the user test subsidy, bank rate, bank loan share and tenure.
-
-The downloadable CSV is intended for field record/export. The Excel workbook supplied separately contains the backend formulas and editable programme assumptions.
+Key features:
+- Existing-business vs new-business financing logic
+- Existing business: repayment based on positive improvement in monthly operating profit after additional business-specific expenses
+- New business: pre-intervention business costs are not required; 40% of post-intervention profit after essential family/medical/household expenses is considered for repayment
+- Maintenance cost on the new solution is included using an editable annual percentage of solution cost
+- Editable interest rate, tenure, subsidy and bank-loan share
+- End-user contribution available and required contribution
+- Scenario analysis
+- Executive summary
+- Download assessment CSV
+- Download backend calculations CSV
+- Print / PDF
