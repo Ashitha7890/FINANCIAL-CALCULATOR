@@ -363,11 +363,13 @@ const MODEL_SOURCE_OVERRIDES={
   "Portable Bridge School":"https://selcofoundation.org/education/"
 };
 for(const c of Object.values(SELCO_MASTER)) for(const sub of Object.keys(c.subcategories)) c.subcategories[sub]=c.subcategories[sub].map(x=>typeof x==="string"?{name:x,source:MODEL_SOURCE_OVERRIDES[x]||c.source}:x);
-const CATS=Object.keys(SELCO_MASTER);
+const CATS=["Livelihood","Healthcare","Education","Household / Basic Energy Access","Community","Institutional Services","Built Environments","Other / Not Listed"];
 const REV=["Main business revenue","Other revenue / services","Other income"];
 const COST=["Raw materials / inputs","Energy / fuel","Rent / maintenance","Transport","Labour / staff","Packaging / supplies","Other operating costs","Other costs"];
 const E=n=>Number.isFinite(n)?new Intl.NumberFormat("en-IN",{maximumFractionDigits:0}).format(Math.round(n)):"—";
 const P=n=>(n*100).toFixed(1)+"%";
+const rateText=v=>{const n=Math.min(99.99,Math.max(0,Number(v)||0));return n.toFixed(2).padStart(5,"0")};
+const parseRateText=v=>{const n=parseFloat(String(v).replace(/[^0-9.]/g,""));return Number.isFinite(n)?Math.min(99.99,Math.max(0,n)):0};
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 function pmt(r,n,pv){return n<=0?NaN:(r?pv*r/(1-Math.pow(1+r,-n)):pv/n)}
 function pv(r,n,p){return n<=0?NaN:(r?p*(1-Math.pow(1+r,-n))/r:p*n)}
@@ -437,7 +439,7 @@ function buildBio(){
  document.getElementById("bio").innerHTML=
  fld("name","Beneficiary / enterprise name",{wide:true})+
  fld("status","Business status",{select:["Existing business","New business"],wide:true,hint:"This is the first decision point"})+
- fld("sector","Beneficiary / application sector",{select:["Agriculture","Animal husbandry","Food processing","Micro-business / enterprise","Healthcare","Education","Household","Community","Institution","Other"],wide:true})+
+ 
  `<div class="field wide"><div><label for="f-category">Solution Category</label><span class="u">SELCO master classification</span></div>${selectHtml("category",S.category,CATS)}</div>`+
  `<div class="field wide"><div><label for="f-subcategory">Sub-Category</label><span class="u">Filtered by Solution Category</span></div>${selectHtml("subcategory",S.subcategory,subs)}</div>`+
  `<div class="field wide"><div><label for="f-solution">Solution Model</label><span class="u">Filtered by Sub-Category</span></div>${selectHtml("solution",S.solution,models)}</div>`+
@@ -446,7 +448,7 @@ function buildBio(){
  table+
  fld("equipment","Other equipment / accessories not listed above",{type:"textarea",wide:true,hint:"Optional: capture additional equipment, tools or accessories"})+
  fld("location","Location",{wide:true})+`<div class="field"><div><label>Contact number</label><span class="u">Select country code; enter digits only</span></div><div class="phone-group"><select id="phoneCountry"><option value="+91" ${S.phoneCountryCode==="+91"?"selected":""}>India +91</option><option value="+1" ${S.phoneCountryCode==="+1"?"selected":""}>USA/Canada +1</option><option value="+44" ${S.phoneCountryCode==="+44"?"selected":""}>UK +44</option><option value="+254" ${S.phoneCountryCode==="+254"?"selected":""}>Kenya +254</option><option value="+251" ${S.phoneCountryCode==="+251"?"selected":""}>Ethiopia +251</option><option value="+255" ${S.phoneCountryCode==="+255"?"selected":""}>Tanzania +255</option><option value="+256" ${S.phoneCountryCode==="+256"?"selected":""}>Uganda +256</option><option value="+234" ${S.phoneCountryCode==="+234"?"selected":""}>Nigeria +234</option><option value="+27" ${S.phoneCountryCode==="+27"?"selected":""}>South Africa +27</option><option value="+971" ${S.phoneCountryCode==="+971"?"selected":""}>UAE +971</option></select><input id="f-phone" type="tel" inputmode="numeric" maxlength="15" value="${esc(S.phone)}" placeholder="Mobile number"></div></div>`+fld("date","Date of assessment",{type:"date"})+fld("officer","Assessed by");
- ["name","status","sector","other","equipment","location","date","officer"].forEach(k=>bind(k));
+ ["name","status","other","equipment","location","date","officer"].forEach(k=>bind(k));
  const pc=document.getElementById("phoneCountry"), ph=document.getElementById("f-phone");
  pc.onchange=()=>{S.phoneCountryCode=pc.value;save();render()}; ph.oninput=()=>{S.phone=ph.value.replace(/\D/g,"");save();render()};
  bindSolutionSelectors();
@@ -489,7 +491,7 @@ function buildFinance(){
  <tr class="total"><td>Total cost</td><td id="totalCapex">${E(total)}</td><td>100.0%</td></tr></tbody></table>
  <div class="table-title">Loan terms</div>
  <table class="simple-input-table"><thead><tr><th>Loan term</th><th>Particulars</th><th>Units</th></tr></thead><tbody>
- <tr><td>Interest rate</td><td><input id="rate" type="number" min="0" max="99.99" step="0.01" inputmode="decimal" value="${(S.rate*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% p.a. (max 99.99)</td></tr>
+ <tr><td>Interest rate</td><td><input id="rate" type="text" inputmode="decimal" maxlength="5" pattern="[0-9]{2}\.[0-9]{2}" value="${rateText(S.rate*100)}" placeholder="00.00"></td><td>% p.a. (max 99.99)</td></tr>
  <tr><td>Tenure</td><td><input id="life" type="number" min="0.01" max="99.99" step="0.01" inputmode="decimal" value="${S.life}"></td><td>years</td></tr>
  <tr><td>Programme subsidy</td><td><input id="subsidyPct" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.subsidyPct*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% of cost (max 100)</td></tr>
  <tr><td>Bank loan</td><td><input id="loanPct" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.loanPct*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% of cost (max 100)</td></tr>
@@ -500,7 +502,9 @@ function buildFinance(){
  <div class="callout"><strong>Fixed assessment factors:</strong> stress haircut ${P(S.stress)} and repayment buffer (DSCR) ${S.dscr.toFixed(2)} are applied automatically.</div>`;
  document.getElementById("finance").innerHTML=html;
  ["solutionCost","energyCost","otherCapitalCost"].forEach(k=>document.getElementById(k).oninput=()=>{S[k]=+document.getElementById(k).value||0;S.capex=(S.solutionCost||0)+(S.energyCost||0)+(S.otherCapitalCost||0);save();render()});
- ["rate","life","contribAvailable"].forEach(k=>document.getElementById(k).oninput=()=>{let v=+document.getElementById(k).value||0;if(k==="rate")v=Math.min(99.99,Math.max(0,v))/100;if(k==="life")v=Math.min(99.99,Math.max(0.01,v));S[k]=v;save();render()});
+ document.getElementById("rate").oninput=()=>{const el=document.getElementById("rate"); el.value=el.value.replace(/[^0-9.]/g,"").slice(0,5); S.rate=parseRateText(el.value)/100; save()};
+document.getElementById("rate").onblur=()=>{S.rate=parseRateText(document.getElementById("rate").value)/100; save(); render()};
+["life","contribAvailable"].forEach(k=>document.getElementById(k).oninput=()=>{let v=+document.getElementById(k).value||0;if(k==="life")v=Math.min(99.99,Math.max(0.01,v));S[k]=v;save();render()});
  document.getElementById("maintPct").oninput=()=>{S.maintPct=Math.min(1,Math.max(0,(+document.getElementById("maintPct").value||0)/100));save();render()};
  ["subsidyPct","loanPct"].forEach(k=>document.getElementById(k).oninput=()=>{S[k]=Math.max(0,Math.min(1,(+document.getElementById(k).value||0)/100));save();render()});
 }
@@ -554,7 +558,7 @@ function scenarioRows(){
  document.getElementById("customScenario").innerHTML=`
  <div class="field"><div><label>Subsidy %</label><span class="hint">Type any value</span></div><input id="cs" type="number" min="0" max="100" step=".01" inputmode="decimal" value="${(S.subsidyPct*100).toFixed(2).replace(/\.00$/,'')}"></div>
  <div class="field"><div><label>Bank loan %</label><span class="hint">Type any value</span></div><input id="cl" type="number" min="0" max="100" step=".01" inputmode="decimal" value="${(S.loanPct*100).toFixed(2).replace(/\.00$/,'')}"></div>
- <div class="field"><div><label>Interest % p.a.</label><span class="hint">Type any value</span></div><input id="cr" type="number" min="0" max="99.99" step=".01" inputmode="decimal" value="${(S.rate*100).toFixed(2).replace(/\.00$/,'')}"></div>
+ <div class="field"><div><label>Interest % p.a.</label><span class="hint">Type any value</span></div><input id="cr" type="text" inputmode="decimal" maxlength="5" pattern="[0-9]{2}\.[0-9]{2}" value="${rateText(S.rate*100)}" placeholder="00.00"></div>
  <div class="field"><div><label>Tenure (years)</label></div><input id="ct" type="number" min="0.01" max="99.99" step="0.01" inputmode="decimal" value="${Math.min(5,S.life)}"></div>
  <div class="callout" id="customOut"></div>`;
  const update=()=>{const sub=Math.max(0,Math.min(1,(+document.getElementById("cs").value||0)/100)), loanp=Math.max(0,Math.min(1,(+document.getElementById("cl").value||0)/100)), rate=Math.max(0,(+document.getElementById("cr").value||0)/100), years=+document.getElementById("ct").value||0, loan=S.capex*loanp, emi=loan>0?pmt(rate/S.cycles,years*S.cycles,loan):0;document.getElementById("customOut").innerHTML=`<strong>Result:</strong> Subsidy ${E(S.capex*sub)}, bank loan ${E(loan)}, beneficiary contribution ${E(Math.max(0,S.capex-S.capex*sub-loan))}, EMI ${E(emi)}. <b>${emi<=m.maxEmi&&years<=S.life?"Affordable under current repayment capacity.":"Not affordable under current repayment capacity."}</b>`};
@@ -580,7 +584,7 @@ document.getElementById("print").onclick=()=>window.print();
 document.getElementById("reset").onclick=()=>{if(confirm("Clear this assessment and start again?")){S=structuredClone(BLANK);save();render()}};
 document.getElementById("download").onclick=()=>{
  const m=calc(), rows=[
- ["Field","Value"],["Beneficiary",S.name],["Contact number",(S.phoneCountryCode||"+91")+" "+S.phone],["Business status",S.status],["Sector",S.sector],["Solution category",S.category],["Solution sub-category",S.subcategory],["Solution model",S.solution],["Official SELCO source",S.solutionSource],["Other solution",S.other],["Panel capacity",S.systemSpecs.panelCapacity],["Panel quantity",S.systemSpecs.panelQty],["Total PV capacity",S.systemSpecs.totalPvCapacity],["Battery capacity",S.systemSpecs.batteryCapacity],["Battery quantity",S.systemSpecs.batteryQty],["Inverter capacity",S.systemSpecs.inverterCapacity],["Controller / charge controller",S.systemSpecs.controller],["Pump / motor capacity",S.systemSpecs.pumpMotorCapacity],["Storage / tank capacity",S.systemSpecs.storageCapacity],["Main equipment capacity",S.systemSpecs.equipmentCapacity],["Mounting / installation",S.systemSpecs.mounting],["Wiring & protection",S.systemSpecs.wiringProtection],["Other technical specifications",S.systemSpecs.other],["Other equipment",S.equipment],["Pre revenue / month",m.preRev],["Post revenue / month",m.postRev],["Pre operating profit / month",m.preProfit],["Post operating profit / month",m.postProfit],["Profit improvement / month",m.improvement],["Repayment source",S.status==="Existing business"?"Additional operating profit":"Post-intervention profit × repayment share"],["Maximum affordable EMI",m.maxEmi],["Subsidy",m.subsidy],["Bank loan",m.loan],["Beneficiary contribution",m.self],["Estimated EMI",m.emi],["Result",m.result]];
+ ["Field","Value"],["Beneficiary",S.name],["Contact number",(S.phoneCountryCode||"+91")+" "+S.phone],["Business status",S.status],["Solution category",S.category],["Solution sub-category",S.subcategory],["Solution model",S.solution],["Official SELCO source",S.solutionSource],["Other solution",S.other],["Panel capacity",S.systemSpecs.panelCapacity],["Panel quantity",S.systemSpecs.panelQty],["Total PV capacity",S.systemSpecs.totalPvCapacity],["Battery capacity",S.systemSpecs.batteryCapacity],["Battery quantity",S.systemSpecs.batteryQty],["Inverter capacity",S.systemSpecs.inverterCapacity],["Controller / charge controller",S.systemSpecs.controller],["Pump / motor capacity",S.systemSpecs.pumpMotorCapacity],["Storage / tank capacity",S.systemSpecs.storageCapacity],["Main equipment capacity",S.systemSpecs.equipmentCapacity],["Mounting / installation",S.systemSpecs.mounting],["Wiring & protection",S.systemSpecs.wiringProtection],["Other technical specifications",S.systemSpecs.other],["Other equipment",S.equipment],["Pre revenue / month",m.preRev],["Post revenue / month",m.postRev],["Pre operating profit / month",m.preProfit],["Post operating profit / month",m.postProfit],["Profit improvement / month",m.improvement],["Repayment source",S.status==="Existing business"?"Additional operating profit":"Post-intervention profit × repayment share"],["Maximum affordable EMI",m.maxEmi],["Subsidy",m.subsidy],["Bank loan",m.loan],["Beneficiary contribution",m.self],["Estimated EMI",m.emi],["Result",m.result]];
  const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="G7H_VE_Selco_financing_assessment.csv";a.click();URL.revokeObjectURL(a.href)
 };
