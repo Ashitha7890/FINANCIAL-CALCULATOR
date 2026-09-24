@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>G7H / VE / Selco Field Financing Assessment</title>
+<meta name="description" content="Field-friendly solution assessment and financing affordability tool">
+<style>
+:root{
+  --ground:#F1F4F8; --surface:#FFFFFF; --surface-2:#F7F9FC; --sunken:#E8EDF4;
+  --ink:#101722; --ink-2:#3E4A5C; --ink-3:#6B788C; --line:#D5DCE6; --line-2:#C0CAD8;
+  --accent:#24518F; --accent-soft:#E4EBF6; --accent-ink:#1B3E6E;
+  --ochre:#8E5F14; --ochre-soft:#FAF0DC; --ochre-line:#D9AE5C;
+  --pass:#14683F; --pass-soft:#DFF0E6; --pass-line:#8FC7A9;
+  --caution:#8A5605; --caution-soft:#FCEEDA; --caution-line:#E2B269;
+  --fail:#9E252A; --fail-soft:#FBE4E4; --fail-line:#E09A9C;
+  --shadow:0 1px 2px rgba(16,23,34,.05), 0 6px 20px -12px rgba(16,23,34,.28);
+  --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  --disp:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --body:'Source Sans 3','Helvetica Neue',Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ground:#0C1118; --surface:#141C27; --surface-2:#19222E; --sunken:#0A0F15;
+  --ink:#E8EDF4; --ink-2:#AEBACA; --ink-3:#7C8A9C; --line:#26313F; --line-2:#33404F;
+  --accent:#7FA9E8; --accent-soft:#1B2735; --accent-ink:#A9C6F2;
+  --ochre:#DDAE5B; --ochre-soft:#2A2114; --ochre-line:#6E5528;
+  --pass:#5FC08D; --pass-soft:#12241A; --pass-line:#2F5C42;
+  --caution:#E3AE55; --caution-soft:#2A2113; --caution-line:#6B5324;
+  --fail:#F08387; --fail-soft:#2B1517; --fail-line:#6E3134;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.8);
+}}
+:root[data-theme="dark"]{
+  --ground:#0C1118; --surface:#141C27; --surface-2:#19222E; --sunken:#0A0F15;
+  --ink:#E8EDF4; --ink-2:#AEBACA; --ink-3:#7C8A9C; --line:#26313F; --line-2:#33404F;
+  --accent:#7FA9E8; --accent-soft:#1B2735; --accent-ink:#A9C6F2;
+  --ochre:#DDAE5B; --ochre-soft:#2A2114; --ochre-line:#6E5528;
+  --pass:#5FC08D; --pass-soft:#12241A; --pass-line:#2F5C42;
+  --caution:#E3AE55; --caution-soft:#2A2113; --caution-line:#6B5324;
+  --fail:#F08387; --fail-soft:#2B1517; --fail-line:#6E3134;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+img{max-width:100%}
+[hidden]{display:none!important}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.disp{font-family:var(--disp);text-wrap:balance;margin:0}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:1420px;margin:0 auto;padding:0 20px 72px}
+
+.mast{border-bottom:1px solid var(--line);background:var(--surface)}
+.mast-in{max-width:1420px;margin:0 auto;padding:20px 20px 0;display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;justify-content:space-between}
+.eyebrow{font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.mast h1{font-size:25px;font-weight:700;letter-spacing:-.015em;line-height:1.15}
+.mast p{margin:6px 0 0;color:var(--ink-2);max-width:66ch;font-size:14px}
+.mast-side{display:flex;gap:8px;align-items:center}
+.btn{font-family:var(--disp);font-size:12px;font-weight:600;padding:8px 13px;border-radius:5px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink-2);cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tabs{max-width:1420px;margin:0 auto;padding:14px 20px 0;display:flex;gap:4px}
+.tab{font-family:var(--disp);font-size:13.5px;font-weight:600;padding:10px 18px;border:1px solid var(--line);border-bottom:0;
+  border-radius:6px 6px 0 0;background:var(--surface-2);color:var(--ink-3);cursor:pointer;margin-bottom:-1px}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--accent);border-bottom:1px solid var(--surface)}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+.verdict{position:sticky;top:0;z-index:6;border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:7px;background:var(--surface);
+  padding:15px 20px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;box-shadow:var(--shadow);margin:18px 0 14px}
+.verdict.is-go{border-left-color:var(--pass);background:var(--pass-soft)}
+.verdict.is-cond{border-left-color:var(--caution);background:var(--caution-soft)}
+.verdict.is-no{border-left-color:var(--fail);background:var(--fail-soft)}
+.verdict.is-data{border-left-color:var(--accent);background:var(--accent-soft)}
+.verdict-tag{font-family:var(--disp);font-size:21px;font-weight:700}
+.is-go .verdict-tag{color:var(--pass)} .is-cond .verdict-tag{color:var(--caution)}
+.is-no .verdict-tag{color:var(--fail)} .is-data .verdict-tag{color:var(--accent)}
+.verdict-why{margin-top:3px;color:var(--ink-2);font-size:14.5px}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px 5px 9px;font-size:12.5px;white-space:nowrap}
+.chip b{font-family:var(--disp);font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.d-pass{background:var(--pass)} .d-caution{background:var(--caution)} .d-fail{background:var(--fail)}
+
+.cols{display:grid;grid-template-columns:360px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:1080px){.cols{grid-template-columns:1fr}}
+.rail{display:flex;flex-direction:column;gap:12px}
+.stack{display:flex;flex-direction:column;gap:18px;min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:7px;box-shadow:var(--shadow);overflow:hidden}
+.phead{display:flex;align-items:baseline;gap:9px;padding:11px 15px;border-bottom:1px solid var(--line);background:var(--surface-2);flex-wrap:wrap}
+.phead h2{font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink)}
+.phead .sec{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:600}
+.phead .hint{margin-left:auto;font-size:11.5px;color:var(--ink-3);font-family:var(--disp)}
+.pbody{padding:13px 15px}
+.pnote{padding:9px 15px;background:var(--sunken);border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);font-style:italic}
+
+.field{display:grid;grid-template-columns:1fr 118px;gap:9px;align-items:center;padding:5px 0 5px 10px;border-left:2px solid var(--ochre-line);margin-bottom:3px}
+.field.locked{border-left-color:var(--line-2)}
+.field label{font-size:13px;color:var(--ink-2);line-height:1.3}
+.field .u{font-size:11px;color:var(--ink-3);display:block;font-family:var(--disp)}
+input[type=number],input[type=text],input[type=date],select{width:100%;font-family:var(--mono);font-size:13.5px;font-weight:500;text-align:right;
+  padding:6px 8px;border:1px solid var(--line-2);border-radius:4px;background:var(--ochre-soft);color:var(--ink)}
+select,input[type=text],input[type=date]{text-align:left;font-family:var(--body)}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+input.bad{border-color:var(--fail);background:var(--fail-soft)}
+input[readonly]{background:var(--surface-2);color:var(--ink-3);cursor:not-allowed}
+.field.wide{grid-template-columns:1fr;gap:3px}
+.field.wide input,.field.wide select{text-align:left}
+.kyc{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.kyc:last-child{border-bottom:0}
+.kyc span{font-size:13px;color:var(--ink-2);line-height:1.3}
+.seg{display:flex;border:1px solid var(--line-2);border-radius:5px;overflow:hidden;flex:none}
+.seg button{font-family:var(--disp);font-size:11.5px;font-weight:600;padding:4px 11px;border:0;background:var(--surface);color:var(--ink-3);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+:root[data-theme="dark"] .seg button[aria-pressed="true"],
+:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{color:#0C1118}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+.chain{display:flex;flex-direction:column}
+.row{border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row-h{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:9px 15px;cursor:pointer;background:none;border:0;width:100%;text-align:left;font:inherit;color:inherit}
+.row-h:hover{background:var(--surface-2)}
+.row-h:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.row-l{font-size:13.5px;color:var(--ink-2);min-width:0}
+.row-v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14.5px;font-weight:500;white-space:nowrap}
+.row.key .row-l{color:var(--ink);font-weight:600}
+.row.key .row-v{font-size:17px;font-weight:600;color:var(--accent)}
+.row.key{background:var(--accent-soft)}
+.fx{font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:3px;padding:0 5px;line-height:16px;flex:none}
+.row-h[aria-expanded="true"] .fx{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.expl{padding:0 15px 13px;background:var(--sunken);border-top:1px dashed var(--line)}
+.expl .lbl{font-family:var(--disp);font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin:11px 0 4px}
+.expl pre{margin:0;font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--accent-ink);white-space:pre-wrap;word-break:break-word}
+:root[data-theme="dark"] .expl pre,:root:not([data-theme="light"]) .expl pre{color:var(--accent)}
+.expl p{margin:0;font-size:13px;color:var(--ink-2);max-width:72ch}
+.tag{display:inline-block;font-family:var(--disp);font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 7px;border-radius:3px;border:1px solid;white-space:nowrap}
+.t-pass{color:var(--pass);background:var(--pass-soft);border-color:var(--pass-line)}
+.t-caution{color:var(--caution);background:var(--caution-soft);border-color:var(--caution-line)}
+.t-fail{color:var(--fail);background:var(--fail-soft);border-color:var(--fail-line)}
+.t-mute{color:var(--ink-3);background:var(--surface-2);border-color:var(--line)}
+
+.splitbar{display:flex;height:34px;border-radius:5px;overflow:hidden;border:1px solid var(--line-2);margin-bottom:11px}
+.splitbar div{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11.5px;font-weight:600;color:#fff;min-width:0;overflow:hidden;transition:flex-basis .25s ease}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2)}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px}
+
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-family:var(--disp);font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);
+  text-align:right;padding:8px 12px;border-bottom:1px solid var(--line-2);white-space:nowrap;background:var(--surface-2)}
+th:first-child,td:first-child{text-align:left}
+th.l,td.l{text-align:left}
+td{padding:7px 12px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.l{font-family:var(--body)}
+tr.rec td{background:var(--accent-soft);font-weight:600}
+tr.dim td:not(.l){color:var(--ink-3)}
+.mark{font-family:var(--disp);font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--accent)}
+td input{width:82px;padding:4px 6px;font-size:12.5px;text-align:right;background:var(--ochre-soft)}
+
+.checks{display:flex;flex-direction:column}
+.check{display:grid;grid-template-columns:78px 1fr;gap:12px;padding:9px 15px;border-bottom:1px solid var(--line);align-items:start}
+.check:last-child{border-bottom:0}
+.check .cl{font-size:13.5px;color:var(--ink);font-weight:600}
+.check .cd{font-size:12.5px;color:var(--ink-3);margin-top:1px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.kv:last-child{border-bottom:0}
+.kv b{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 26px}
+@media (max-width:700px){.grid2{grid-template-columns:1fr}}
+svg{display:block;width:100%;height:auto}
+.footer{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);max-width:88ch}
+
+@media (max-width:680px){
+  .wrap{padding:0 12px 56px}
+  .mast-in{padding:15px 12px 0;gap:12px}
+  .mast h1{font-size:20px}
+  .mast p{font-size:13.5px}
+  .mast-side{width:100%}
+  .mast-side .btn{flex:1;padding:10px;font-size:12.5px}
+  .tabs{padding:12px 12px 0}
+  .tab{flex:1;text-align:center;padding:10px 8px;font-size:13px}
+  .verdict{padding:12px 14px;gap:10px}
+  .verdict-tag{font-size:18px}
+  .verdict-why{font-size:13.5px}
+  .phead{padding:10px 13px}
+  .phead .hint{flex-basis:100%;margin-left:0;font-size:11px}
+  .pbody{padding:11px 13px}
+  .field{grid-template-columns:1fr 124px;gap:10px;padding:7px 0 7px 10px}
+  input[type=number],input[type=text],input[type=date],select{font-size:16px;padding:10px}
+  .seg button{font-size:13.5px;padding:10px 16px}
+  .kyc{padding:9px 0}
+  .row-h{padding:12px 13px;gap:9px}
+  .row-l{font-size:13px} .row-v{font-size:13.5px}
+  .fx{padding:0 8px;line-height:22px;font-size:12px}
+  .check{grid-template-columns:70px 1fr;gap:10px;padding:10px 13px}
+  th,td{padding:8px 10px}
+  td input{width:70px;font-size:15px}
+}
+@media print{ .verdict{position:static} .cols{grid-template-columns:1fr} .mast-side,.tabs{display:none} body{background:#fff} .panel{box-shadow:none;break-inside:avoid} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* revised field app */
+.pbody{padding:14px 16px}.field{grid-template-columns:minmax(260px,1fr) minmax(180px,320px);}.field.wide{grid-template-columns:1fr minmax(300px,520px)}
+.field input,.field select,.field textarea{width:100%}textarea{min-height:70px;resize:vertical}
+.table-wrap{overflow:auto}.input-table{width:100%;border-collapse:collapse}.input-table th,.input-table td{border:1px solid var(--line);padding:8px;text-align:left}.input-table th{background:var(--surface-2);font-family:var(--disp);font-size:12px}.input-table input{width:100%;min-width:100px;padding:8px;border:1px solid var(--line-2);border-radius:4px;background:var(--surface)}
+.input-cell{background:var(--ochre-soft)!important}.calc-cell{background:var(--sunken)!important}
+.callout{padding:12px 14px;border:1px solid var(--line);background:var(--surface-2);border-radius:6px;margin:10px 0}.callout strong{font-family:var(--disp)}
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{border:1px solid var(--line);border-radius:6px;padding:12px;background:var(--surface)}.metric .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}.metric .value{font:600 20px var(--mono);margin-top:4px}.metric .sub{font-size:12px;color:var(--ink-2);margin-top:3px}
+.decision{padding:14px;border-radius:6px;border:1px solid var(--line);background:var(--surface)}.decision h3{font-size:17px}.decision p{margin:5px 0;color:var(--ink-2)}
+@media(max-width:800px){.summary-grid{grid-template-columns:1fr 1fr}.field,.field.wide{grid-template-columns:1fr}.field input,.field select,.field textarea{width:100%}}
+</style>
+</head>
+<body>
+<header class="mast">
+<div class="mast-in">
+<div><div class="eyebrow">Field assessment · development finance</div>
+<h1>G7H / VE / Selco Financing Assessment</h1>
+<p>Simple field capture of the beneficiary's current situation and expected situation after the solution. The tool then tests affordability and financing options.</p></div>
+<div class="mast-side"><button class="btn" id="download">Download</button><button class="btn" id="print">Print / PDF</button><button class="btn" id="reset">Clear</button></div>
+</div>
+<div class="tabs" role="tablist">
+<button class="tab" id="tab-a" role="tab" aria-selected="true">1. Field Assessment</button>
+<button class="tab" id="tab-s" role="tab" aria-selected="false">2. Scenario Analysis</button>
+<button class="tab" id="tab-e" role="tab" aria-selected="false">3. Executive Summary</button>
+</div>
+</header>
+<div class="wrap">
+<div class="verdict" id="verdict"><div><div class="verdict-tag" id="vTag">ENTER DATA</div><div class="verdict-why" id="vWhy">Start with the beneficiary and business status.</div></div><div class="chips" id="chips"></div></div>
+
+<section id="pane-a">
+<div class="cols">
+<div class="rail">
+<section class="panel"><div class="phead"><span class="sec">1</span><h2>Beneficiary & solution</h2><span class="hint">Start here</span></div><div class="pbody" id="bio"></div></section>
+<section class="panel"><div class="phead"><span class="sec">2</span><h2>Readiness</h2><span class="hint">Keep questions simple</span></div><div class="pbody" id="elig"></div></section>
+<section class="panel"><div class="phead"><span class="sec">3</span><h2>Pre-intervention → Post-intervention</h2><span class="hint">Monthly operating values</span></div><div class="pbody">
+<div class="callout"><strong>Ask the beneficiary:</strong> “What is happening now?” and “What do you expect after this solution?” Enter the same period for both columns. If a line does not apply, enter 0.</div>
+<div class="table-wrap"><table class="input-table"><thead><tr><th>Income / revenue</th><th>Before / month</th><th>After / month</th><th>Change</th><th>Cost</th><th>Before / month</th><th>After / month</th><th>Change</th></tr></thead><tbody id="opsRows"></tbody><tfoot id="opsTotal"></tfoot></table></div>
+</div></section>
+<section class="panel"><div class="phead"><span class="sec">4</span><h2>Solution cost & programme assumptions</h2><span class="hint">Programme settings stay controlled</span></div><div class="pbody" id="finance"></div></section>
+</div>
+<div class="main">
+<section class="panel"><div class="phead"><span class="sec">5</span><h2>Analysis & financing recommendation</h2></div><div class="pbody"><div class="summary-grid" id="metrics"></div><div class="decision" id="decision" style="margin-top:12px"></div></div></section>
+<section class="panel"><div class="phead"><span class="sec">6</span><h2>What the field team should take forward</h2></div><div class="pbody" id="checks"></div></section>
+</div>
+</div>
+</section>
+
+<section id="pane-s" hidden>
+<section class="panel"><div class="phead"><span class="sec">A</span><h2>Scenario analysis</h2><span class="hint">Change subsidy, bank rate, loan share and tenure</span></div>
+<div class="pbody"><div class="callout">The stress haircut and repayment buffer are kept unchanged. Use this page to see whether a different financing mix makes the solution affordable.</div>
+<div class="table-wrap"><table class="input-table"><thead><tr><th>Scenario</th><th>Subsidy %</th><th>Bank loan %</th><th>Interest %</th><th>Tenure</th><th>Subsidy</th><th>Loan</th><th>EMI</th><th>Affordable?</th></tr></thead><tbody id="scenarioRows"></tbody></table></div></div></section>
+<section class="panel"><div class="phead"><span class="sec">B</span><h2>Try your own structure</h2></div><div class="pbody" id="customScenario"></div></section>
+</section>
+
+<section id="pane-e" hidden>
+<section class="panel"><div class="phead"><span class="sec">1</span><h2>Executive summary</h2><span class="hint">Simple beneficiary-facing view</span></div><div class="pbody" id="exec"></div></section>
+</section>
+</div>
+
+<script>
+"use strict";
+const BLANK={name:"",status:"",sector:"",category:"",solution:"",other:"",specs:"",equipment:"",location:"",phone:"",date:new Date().toISOString().slice(0,10),officer:"",
+elig:[null,null,null,null,null], revenue:[0,0,0], revenuePost:[0,0,0], costs:[0,0,0,0,0,0,0,0], costsPost:[0,0,0,0,0,0,0,0],
+capex:0,cycles:12,life:10,contribAvailable:0,rate:.16,subsidyPct:.30,loanPct:.50,newRepayShare:.50,maintPct:.02,stress:.25,dscr:1.30};
+let S=JSON.parse(localStorage.getItem("g7h-finance-state")||"null")||structuredClone(BLANK);
+const CATS=["Agriculture & Irrigation","Livestock & Poultry","Dairy & Food","Cooling & Cold Chain","Water & WASH","Healthcare","Enterprise & Services","Household Energy","Renewable Energy Systems","Other"];
+const SOLS=["Solar irrigation pump","Solar crop processing / milling","Solar poultry lighting / brooder","Solar livestock water pumping","Solar milk chiller","Solar food processing","Solar cold storage","Solar refrigerator","Solar water pumping","Solar healthcare power system","Solar barbershop / productive-use kit","Solar home energy system","Solar PV + battery system","Biogas / clean cooking system","Other"];
+const REV=["Main business revenue","Other revenue / services","Other income"];
+const COST=["Raw materials / inputs","Energy / fuel","Rent / maintenance","Transport","Labour / staff","Packaging / supplies","Other operating costs","Other costs"];
+const E=n=>Number.isFinite(n)?new Intl.NumberFormat("en-IN",{maximumFractionDigits:0}).format(Math.round(n)):"—";
+const P=n=>(n*100).toFixed(1)+"%";
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function pmt(r,n,pv){return n<=0?NaN:(r?pv*r/(1-Math.pow(1+r,-n)):pv/n)}
+function pv(r,n,p){return n<=0?NaN:(r?p*(1-Math.pow(1+r,-n))/r:p*n)}
+function calc(){
+ const preRev=S.revenue.reduce((a,b)=>a+ +b,0), postRev=S.revenuePost.reduce((a,b)=>a+ +b,0);
+ const preCost=S.costs.reduce((a,b)=>a+ +b,0), postCost=S.costsPost.reduce((a,b)=>a+ +b,0)+(S.capex*S.maintPct/12);
+ const preProfit=preRev-preCost, postProfit=postRev-postCost, improvement=postProfit-preProfit;
+ const repaymentBase=S.status==="Existing business"?improvement:postProfit*S.newRepayShare;
+ const annual=repaymentBase*12;
+ const maxEmi=Math.max(0,(repaymentBase*(1-S.stress))/S.dscr);
+ const n=S.cycles*S.life, r=S.rate/S.cycles;
+ const subsidy=Math.min(S.capex*S.subsidyPct,S.capex);
+ const loanCap=Math.min(S.capex*S.loanPct,Math.max(0,S.capex-subsidy));
+ const affordableLoan=Math.max(0,pv(r,n,maxEmi));
+ const loan=Math.min(loanCap,affordableLoan);
+ const self=Math.max(0,S.capex-subsidy-loan);
+ const emi=loan>0?pmt(r,n,loan):0;
+ const within=loan<=0||emi<=maxEmi+0.01;
+ const contributionGap=Math.max(0,self-S.contribAvailable);
+ let result="ENTER DATA";
+ if(!S.status) result="SELECT BUSINESS STATUS";
+ else if(!S.capex) result="ENTER SOLUTION COST";
+ else if(!within||loanCap>0&&maxEmi<=loanCap*r) result="REVISE FINANCING";
+ else result="FINANCING CAN BE CONSIDERED";
+ return {preRev,postRev,preCost,postCost,preProfit,postProfit,improvement,repaymentBase,annual,maxEmi,subsidy,loanCap,affordableLoan,loan,self,emi,within,contributionGap,result};
+}
+function fld(key,label,opts={}){
+ const v=S[key]??"";
+ let control=opts.type==="textarea"?`<textarea id="f-${key}">${esc(v)}</textarea>`:
+ opts.select?`<select id="f-${key}"><option value="">— choose —</option>${opts.select.map(x=>`<option ${v===x?"selected":""}>${esc(x)}</option>`).join("")}</select>`:
+ `<input id="f-${key}" type="${opts.type||"text"}" value="${esc(v)}" ${opts.step?`step="${opts.step}"`:""}>`;
+ return `<div class="field ${opts.wide?"wide":""}"><div><label for="f-${key}">${esc(label)}</label>${opts.hint?`<span class="u">${esc(opts.hint)}</span>`:""}</div>${control}</div>`;
+}
+function bind(key,conv=x=>x){const el=document.getElementById("f-"+key);if(!el)return;el.addEventListener("input",()=>{S[key]=conv(el.value);save();render()});el.addEventListener("change",()=>{S[key]=conv(el.value);save();render()})}
+function buildBio(){
+ document.getElementById("bio").innerHTML=
+ fld("name","Beneficiary / enterprise name",{wide:true})+
+ fld("status","Business status",{select:["Existing business","New business"],wide:true,hint:"This is the first decision point"})+
+ fld("sector","Sector / livelihood area",{select:["Agriculture","Livestock & Poultry","Dairy","Food processing","Enterprise / services","Water","Healthcare","Household","Other"],wide:true})+
+ fld("category","Solution category",{select:CATS,wide:true})+
+ fld("solution","Solution model / technology",{select:SOLS,wide:true})+
+ fld("other","Other solution description",{type:"textarea",wide:true,hint:"Complete only when Other is selected"})+
+ fld("specs","System specifications",{type:"textarea",wide:true,hint:"Capacity, size, configuration, key technical specifications"})+
+ fld("equipment","Other equipment used in the solution",{type:"textarea",wide:true})+
+ fld("location","Location",{wide:true})+fld("phone","Contact number")+fld("date","Date of assessment",{type:"date"})+fld("officer","Assessed by");
+ ["name","status","sector","category","solution","other","specs","equipment","location","phone","date","officer"].forEach(k=>bind(k));
+}
+function buildElig(){
+ const qs=["Beneficiary identification / registration available?","Bank account available?","Existing loan default / repayment issue?","Willing to contribute to the solution?","Solution can be implemented at the proposed site?"];
+ document.getElementById("elig").innerHTML=qs.map((q,i)=>`<div class="check"><b>${i+1}</b><span>${q}</span><div class="seg">${["Yes","No"].map(t=>`<button type="button" aria-pressed="${(S.elig[i]===true)===(t==="Yes")&&S.elig[i]!==null}">${t}</button>`).join("")}</div></div>`).join("");
+ document.querySelectorAll("#elig .seg").forEach((seg,i)=>seg.querySelectorAll("button").forEach(btn=>btn.onclick=()=>{S.elig[i]=btn.textContent==="Yes";save();render()}));
+}
+function buildOps(){
+ let h="";
+ for(let i=0;i<3;i++)h+=`<tr><td>${REV[i]}</td><td><input class="input-cell rev-pre" data-i="${i}" type="number" min="0" step="1" value="${S.revenue[i]}"></td><td><input class="input-cell rev-post" data-i="${i}" type="number" min="0" step="1" value="${S.revenuePost[i]}"></td><td class="calc-cell" id="rd${i}">${E(S.revenuePost[i]-S.revenue[i])}</td><td>${COST[i]}</td><td><input class="input-cell cost-pre" data-i="${i}" type="number" min="0" step="1" value="${S.costs[i]}"></td><td><input class="input-cell cost-post" data-i="${i}" type="number" min="0" step="1" value="${S.costsPost[i]}"></td><td class="calc-cell" id="cd${i}">${E(S.costsPost[i]-S.costs[i])}</td></tr>`;
+ for(let i=3;i<8;i++)h+=`<tr><td></td><td></td><td></td><td></td><td>${COST[i]}</td><td><input class="input-cell cost-pre" data-i="${i}" type="number" min="0" step="1" value="${S.costs[i]}"></td><td><input class="input-cell cost-post" data-i="${i}" type="number" min="0" step="1" value="${S.costsPost[i]}"></td><td class="calc-cell" id="cd${i}">${E(S.costsPost[i]-S.costs[i])}</td></tr>`;
+ document.getElementById("opsRows").innerHTML=h;
+ document.getElementById("opsTotal").innerHTML=`<tr><th>TOTAL</th><th>${E(S.revenue.reduce((a,b)=>a+b,0))}</th><th>${E(S.revenuePost.reduce((a,b)=>a+b,0))}</th><th>${E(S.revenuePost.reduce((a,b)=>a+b,0)-S.revenue.reduce((a,b)=>a+b,0))}</th><th>TOTAL COST</th><th>${E(S.costs.reduce((a,b)=>a+b,0))}</th><th>${E(S.costsPost.reduce((a,b)=>a+b,0))}</th><th>${E(S.costsPost.reduce((a,b)=>a+b,0)-S.costs.reduce((a,b)=>a+b,0))}</th></tr>`;
+ document.querySelectorAll(".rev-pre").forEach(e=>e.oninput=()=>{S.revenue[e.dataset.i]=+e.value||0;save();render()});
+ document.querySelectorAll(".rev-post").forEach(e=>e.oninput=()=>{S.revenuePost[e.dataset.i]=+e.value||0;save();render()});
+ document.querySelectorAll(".cost-pre").forEach(e=>e.oninput=()=>{S.costs[e.dataset.i]=+e.value||0;save();render()});
+ document.querySelectorAll(".cost-post").forEach(e=>e.oninput=()=>{S.costsPost[e.dataset.i]=+e.value||0;save();render()});
+}
+function buildFinance(){
+ const html=fld("capex","Quoted solution cost",{type:"number",wide:true,hint:"Use the confirmed quotation"})+
+ fld("cycles","Payment cycles per year",{type:"number",hint:"12 for monthly"})+
+ fld("life","Expected solution life (years)",{type:"number"})+
+ fld("contribAvailable","Beneficiary contribution available",{type:"number",wide:true})+
+ fld("rate","Bank interest rate (annual)",{type:"number",step:"0.01",hint:"e.g. 0.16 = 16%"})+
+ fld("subsidyPct","Programme subsidy share",{type:"number",step:"0.01"})+
+ fld("loanPct","Bank loan share",{type:"number",step:"0.01"})+
+ fld("newRepayShare","New business repayment share",{type:"number",step:"0.01",hint:"Only used for New business"})+
+ fld("maintPct","Maintenance / recurring cost share",{type:"number",step:"0.01"})+
+ `<div class="field locked"><div><label>Stress haircut</label><span class="u">fixed</span></div><input value="${P(S.stress)}" readonly></div>`+
+ `<div class="field locked"><div><label>Repayment buffer (DSCR)</label><span class="u">fixed</span></div><input value="${S.dscr.toFixed(2)}" readonly></div>`;
+ document.getElementById("finance").innerHTML=html;
+ ["capex","cycles","life","contribAvailable"].forEach(k=>bind(k,x=>+x||0));
+ ["rate","subsidyPct","loanPct","newRepayShare","maintPct"].forEach(k=>bind(k,x=>+x||0));
+}
+function renderMetrics(m){
+ const source=S.status==="Existing business"?"Additional operating profit":"Post-intervention operating profit × repayment share";
+ document.getElementById("metrics").innerHTML=[
+ ["Pre-intervention profit / month",E(m.preProfit),"Before solution"],
+ ["Post-intervention profit / month",E(m.postProfit),"After solution, before new financing"],
+ ["Repayment source",E(m.repaymentBase),"Amount used before stress & DSCR"],
+ ["Maximum affordable EMI",E(m.maxEmi),"After stress haircut + DSCR"],
+ ["Recommended subsidy",E(m.subsidy),"Programme contribution"],
+ ["Recommended bank loan",E(m.loan),"Loan sized to affordability"],
+ ["Beneficiary contribution",E(m.self),"Balance of solution cost"],
+ ["Estimated EMI",E(m.emi),"At full solution life"]
+ ].map(x=>`<div class="metric"><div class="label">${x[0]}</div><div class="value">${x[1]}</div><div class="sub">${x[2]}</div></div>`).join("");
+ const gap=m.contributionGap>0?`The required beneficiary contribution is ${E(m.contributionGap)} above the amount entered as available.`:"The beneficiary contribution is within the amount entered as available.";
+ const why=!S.status?"Select Existing business or New business first.":S.status==="Existing business"?`Repayment is linked only to the improvement in operating profit after the solution. ${source}.`: `Repayment is limited to ${P(S.newRepayShare)} of post-intervention operating profit so the remaining profit supports the beneficiary's livelihood.`;
+ document.getElementById("decision").innerHTML=`<h3>${m.result}</h3><p>${why}</p><p>${gap}</p><p><strong>Suggested starting structure:</strong> subsidy ${P(S.subsidyPct)}, bank loan sized within ${P(S.loanPct)} maximum, and the balance as beneficiary contribution. Use Scenario Analysis to test alternatives.</p>`;
+ document.getElementById("vTag").textContent=m.result;
+ document.getElementById("vWhy").textContent=why;
+ document.getElementById("verdict").className="verdict "+(m.result==="FINANCING CAN BE CONSIDERED"?"is-go":m.result==="REVISE FINANCING"?"is-cond":"is-data");
+ document.getElementById("chips").innerHTML=`<span class="chip">${S.status||"Business status pending"}</span><span class="chip">${S.solution||"Solution pending"}</span><span class="chip">EMI capacity ${E(m.maxEmi)}</span>`;
+}
+function renderChecks(m){
+ const answered=S.elig.every(x=>x!==null), yes=S.elig.filter(x=>x===true).length;
+ const items=[
+ ["Field completeness",!!S.status&&!!S.capex&&answered,`Business status, solution cost and readiness questions are required.`],
+ ["Existing-business logic",S.status!=="Existing business"||m.improvement>0,`Existing business must show a positive operating-profit improvement after the intervention.`],
+ ["New-business livelihood protection",S.status!=="New business"||m.postProfit>0,`New business should have positive post-intervention operating profit before financing.`],
+ ["Repayment capacity",m.maxEmi>0,`Stress haircut of ${P(S.stress)} and DSCR of ${S.dscr.toFixed(2)} are applied automatically.`],
+ ["Contribution",m.contributionGap<=0, m.contributionGap<=0?"Available contribution covers the calculated balance.":`Short by ${E(m.contributionGap)}.`]
+ ];
+ document.getElementById("checks").innerHTML=items.map(x=>`<div class="check"><span class="tag ${x[1]?"pass":"fail"}">${x[1]?"OK":"CHECK"}</span><div><b>${x[0]}</b><div>${x[2]}</div></div></div>`).join("");
+}
+function scenarioRows(){
+ const defaults=[
+ ["Programme starting point",S.subsidyPct,S.loanPct,S.rate,Math.min(5,S.life)],
+ ["Lower subsidy",Math.max(0,S.subsidyPct-.10),S.loanPct,S.rate,Math.min(5,S.life)],
+ ["Higher subsidy",Math.min(.50,S.subsidyPct+.10),S.loanPct,S.rate,Math.min(5,S.life)],
+ ["Lower bank rate",S.subsidyPct,S.loanPct,Math.max(0,S.rate-.04),Math.min(5,S.life)],
+ ["Longer tenure",S.subsidyPct,S.loanPct,S.rate,Math.min(7,S.life)],
+ ["Lower bank loan",S.subsidyPct,Math.max(0,S.loanPct-.10),S.rate,Math.min(5,S.life)],
+ ["Higher bank loan",S.subsidyPct,Math.min(.80,S.loanPct+.10),S.rate,Math.min(7,S.life)]
+ ];
+ const m=calc(), html=defaults.map((r,i)=>{
+  const loan=S.capex*r[2], subsidy=Math.min(S.capex*r[1],S.capex), self=Math.max(0,S.capex-loan-subsidy), emi=loan>0?pmt(r[3]/S.cycles,r[4]*S.cycles,loan):0;
+  const affordable=emi<=m.maxEmi+0.01 && r[4]<=S.life;
+  return `<tr><td>${r[0]}</td>${r.slice(1).map((v,j)=>`<td>${j<3?P(v):v}</td>`).join("")}<td>${E(subsidy)}</td><td>${E(loan)}</td><td>${E(emi)}</td><td><span class="tag ${affordable?"pass":"fail"}">${affordable?"Affordable":"Not affordable"}</span></td></tr>`;
+ }).join("");
+ document.getElementById("scenarioRows").innerHTML=html;
+ document.getElementById("customScenario").innerHTML=`
+ <div class="field"><div><label>Subsidy %</label></div><input id="cs" type="number" step=".01" value="${S.subsidyPct}"></div>
+ <div class="field"><div><label>Bank loan %</label></div><input id="cl" type="number" step=".01" value="${S.loanPct}"></div>
+ <div class="field"><div><label>Interest % p.a.</label></div><input id="cr" type="number" step=".01" value="${S.rate}"></div>
+ <div class="field"><div><label>Tenure (years)</label></div><input id="ct" type="number" value="${Math.min(5,S.life)}"></div>
+ <div class="callout" id="customOut"></div>`;
+ const update=()=>{const sub=+document.getElementById("cs").value||0, loanp=+document.getElementById("cl").value||0, rate=+document.getElementById("cr").value||0, years=+document.getElementById("ct").value||0, loan=S.capex*loanp, emi=loan>0?pmt(rate/S.cycles,years*S.cycles,loan):0;document.getElementById("customOut").innerHTML=`<strong>Result:</strong> Subsidy ${E(S.capex*sub)}, bank loan ${E(loan)}, beneficiary contribution ${E(Math.max(0,S.capex-S.capex*sub-loan))}, EMI ${E(emi)}. <b>${emi<=m.maxEmi&&years<=S.life?"Affordable under current repayment capacity.":"Not affordable under current repayment capacity."}</b>`};
+ ["cs","cl","cr","ct"].forEach(id=>document.getElementById(id).oninput=update); update();
+}
+function exec(){
+ const m=calc(), source=S.status==="Existing business"?"Additional profit generated by the existing business":"Only "+P(S.newRepayShare)+" of post-intervention profit";
+ document.getElementById("exec").innerHTML=`<div class="summary-grid">
+ <div class="metric"><div class="label">Business</div><div class="value" style="font-size:16px">${esc(S.status||"—")}</div><div class="sub">${esc(S.name||"Beneficiary")}</div></div>
+ <div class="metric"><div class="label">Profit before</div><div class="value">${E(m.preProfit)}</div><div class="sub">per month</div></div>
+ <div class="metric"><div class="label">Profit after</div><div class="value">${E(m.postProfit)}</div><div class="sub">per month</div></div>
+ <div class="metric"><div class="label">Profit change</div><div class="value">${E(m.improvement)}</div><div class="sub">per month</div></div>
+ <div class="metric"><div class="label">Maximum EMI</div><div class="value">${E(m.maxEmi)}</div><div class="sub">after stress + DSCR</div></div>
+ <div class="metric"><div class="label">Estimated EMI</div><div class="value">${E(m.emi)}</div><div class="sub">recommended loan</div></div>
+ </div>
+ <div class="decision" style="margin-top:14px"><h3>Financing structure</h3><p>Solution cost: <strong>${E(S.capex)}</strong></p><p>Programme subsidy: <strong>${E(m.subsidy)}</strong> · Bank loan: <strong>${E(m.loan)}</strong> · Beneficiary contribution: <strong>${E(m.self)}</strong></p><p>Repayment source: <strong>${source}</strong></p><p>Conclusion: <strong>${m.result}</strong></p></div>`;
+}
+function save(){localStorage.setItem("g7h-finance-state",JSON.stringify(S))}
+function render(){buildBio();buildElig();buildOps();buildFinance();const m=calc();renderMetrics(m);renderChecks(m);scenarioRows();exec()}
+function tab(which){["a","s","e"].forEach(x=>{document.getElementById("pane-"+x).hidden=x!==which;document.getElementById("tab-"+x).setAttribute("aria-selected",x===which)})}
+document.getElementById("tab-a").onclick=()=>tab("a");document.getElementById("tab-s").onclick=()=>tab("s");document.getElementById("tab-e").onclick=()=>tab("e");
+document.getElementById("print").onclick=()=>window.print();
+document.getElementById("reset").onclick=()=>{if(confirm("Clear this assessment and start again?")){S=structuredClone(BLANK);save();render()}};
+document.getElementById("download").onclick=()=>{
+ const m=calc(), rows=[
+ ["Field","Value"],["Beneficiary",S.name],["Business status",S.status],["Sector",S.sector],["Solution category",S.category],["Solution model",S.solution],["Other solution",S.other],["System specifications",S.specs],["Other equipment",S.equipment],["Pre revenue / month",m.preRev],["Post revenue / month",m.postRev],["Pre operating profit / month",m.preProfit],["Post operating profit / month",m.postProfit],["Profit improvement / month",m.improvement],["Repayment source",S.status==="Existing business"?"Additional operating profit":"Post-intervention profit × repayment share"],["Maximum affordable EMI",m.maxEmi],["Subsidy",m.subsidy],["Bank loan",m.loan],["Beneficiary contribution",m.self],["Estimated EMI",m.emi],["Result",m.result]];
+ const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="G7H_VE_Selco_financing_assessment.csv";a.click();URL.revokeObjectURL(a.href)
+};
+render();
+</script>
+</body></html>
