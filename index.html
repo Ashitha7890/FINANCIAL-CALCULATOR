@@ -279,7 +279,7 @@ svg{display:block;width:100%;height:auto}
 
 <script>
 "use strict";
-const BLANK={name:"",status:"",sector:"",category:"",subcategory:"",solution:"",solutionSource:"",other:"",specs:"",equipment:"",location:"",phone:"",phoneCountryCode:"+91",date:new Date().toISOString().slice(0,10),officer:"",
+const BLANK={name:"",status:"",category:"",subcategory:"",solution:"",solutionSource:"",other:"",specs:"",equipment:"",location:"",phone:"",phoneCountryCode:"+91",date:new Date().toISOString().slice(0,10),officer:"",
 elig:[null,null,null,null,null], revenue:[0,0,0], revenuePost:[0,0,0], costs:[0,0,0,0,0,0,0,0], costsPost:[0,0,0,0,0,0,0,0],
 capex:0,solutionCost:0,energyCost:0,otherCapitalCost:0,cycles:12,life:10,contribAvailable:0,rate:.16,subsidyPct:.30,loanPct:.50,newRepayShare:.80,maintPct:.01,stress:.25,dscr:1.30,
 existingExtraExpenses:0,newMonthlyExpenses:0,systemSpecs:{panelCapacity:"",panelQty:"",totalPvCapacity:"",batteryCapacity:"",batteryQty:"",inverterCapacity:"",controller:"",pumpMotorCapacity:"",storageCapacity:"",equipmentCapacity:"",mounting:"",wiringProtection:"",other:""}};
@@ -409,8 +409,8 @@ function fld(key,label,opts={}){
 function bind(key,conv=x=>x){const el=document.getElementById("f-"+key);if(!el)return;el.addEventListener("input",()=>{S[key]=conv(el.value);save();render()});el.addEventListener("change",()=>{S[key]=conv(el.value);save();render()})}
 function solutionOptions(category){return Object.keys(SELCO_MASTER[category]?.subcategories||{});}
 function modelOptions(category,sub){return (SELCO_MASTER[category]?.subcategories?.[sub]||[]).map(x=>x.name);}
-function selectHtml(id,value,options,placeholder="— choose —"){
- return `<select id="f-${id}"><option value="">${placeholder}</option>${options.map(x=>`<option value="${esc(x)}" ${value===x?"selected":""}>${esc(x)}</option>`).join("")}</select>`;
+function selectHtml(id,value,options,placeholder="— choose —",disabled=false){
+ return `<select id="f-${id}" ${disabled?"disabled":""}><option value="">${placeholder}</option>${options.map(x=>`<option value="${esc(x)}" ${value===x?"selected":""}>${esc(x)}</option>`).join("")}</select>`;
 }
 function sourceForSelection(){
  const c=SELCO_MASTER[S.category];
@@ -422,8 +422,8 @@ function sourceForSelection(){
 function bindSolutionSelectors(){
  const cat=document.getElementById("f-category"), sub=document.getElementById("f-subcategory"), sol=document.getElementById("f-solution");
  if(!cat||!sub||!sol)return;
- cat.onchange=()=>{S.category=cat.value;S.subcategory="";S.solution="";S.solutionSource=sourceForSelection();save();render()};
- sub.onchange=()=>{S.subcategory=sub.value;S.solution="";S.solutionSource=sourceForSelection();save();render()};
+ cat.onchange=()=>{S.category=cat.value;S.subcategory="";S.solution="";S.solutionSource="";save();render()};
+ sub.onchange=()=>{S.subcategory=sub.value;S.solution="";S.solutionSource="";save();render()};
  sol.onchange=()=>{S.solution=sol.value;S.solutionSource=sourceForSelection();save();render()};
 }
 function buildBio(){
@@ -441,8 +441,8 @@ function buildBio(){
  fld("status","Business status",{select:["Existing business","New business"],wide:true,hint:"This is the first decision point"})+
  
  `<div class="field wide"><div><label for="f-category">Solution Category</label><span class="u">SELCO master classification</span></div>${selectHtml("category",S.category,CATS)}</div>`+
- `<div class="field wide"><div><label for="f-subcategory">Sub-Category</label><span class="u">Filtered by Solution Category</span></div>${selectHtml("subcategory",S.subcategory,subs)}</div>`+
- `<div class="field wide"><div><label for="f-solution">Solution Model</label><span class="u">Filtered by Sub-Category</span></div>${selectHtml("solution",S.solution,models)}</div>`+
+ `<div class="field wide"><div><label for="f-subcategory">Sub-Category</label><span class="u">Filtered by Solution Category</span></div>${selectHtml("subcategory",S.subcategory,subs,"— choose —",!S.category)}</div>`+
+ `<div class="field wide"><div><label for="f-solution">Solution Model</label><span class="u">Filtered by Sub-Category</span></div>${selectHtml("solution",S.solution,models,"— choose —",!S.subcategory)}</div>`+
  fld("other","Other solution description",{type:"textarea",wide:true,hint:"Use when Other / Not Listed is selected"})+
  `<div class="source-note"><strong>Official source:</strong> ${S.solutionSource?`<a href="${esc(S.solutionSource)}" target="_blank" rel="noopener">SELCO source</a>`:"Select a solution to populate the source reference."}</div>`+
  table+
@@ -491,7 +491,7 @@ function buildFinance(){
  <tr class="total"><td>Total cost</td><td id="totalCapex">${E(total)}</td><td>100.0%</td></tr></tbody></table>
  <div class="table-title">Loan terms</div>
  <table class="simple-input-table"><thead><tr><th>Loan term</th><th>Particulars</th><th>Units</th></tr></thead><tbody>
- <tr><td>Interest rate</td><td><input id="rate" type="text" inputmode="decimal" maxlength="5" pattern="[0-9]{2}\.[0-9]{2}" value="${rateText(S.rate*100)}" placeholder="00.00"></td><td>% p.a. (max 99.99)</td></tr>
+ <tr><td>Interest rate</td><td><input id="rate" class="numeric-input" type="text" inputmode="decimal" maxlength="5" pattern="[0-9]{2}\.[0-9]{2}" value="${rateText(S.rate*100)}" placeholder="00.00"></td><td>% p.a. (00.00–99.99)</td></tr>
  <tr><td>Tenure</td><td><input id="life" type="number" min="0.01" max="99.99" step="0.01" inputmode="decimal" value="${S.life}"></td><td>years</td></tr>
  <tr><td>Programme subsidy</td><td><input id="subsidyPct" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.subsidyPct*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% of cost (max 100)</td></tr>
  <tr><td>Bank loan</td><td><input id="loanPct" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.loanPct*100).toFixed(2).replace(/\.00$/,'')}"></td><td>% of cost (max 100)</td></tr>
@@ -502,8 +502,8 @@ function buildFinance(){
  <div class="callout"><strong>Fixed assessment factors:</strong> stress haircut ${P(S.stress)} and repayment buffer (DSCR) ${S.dscr.toFixed(2)} are applied automatically.</div>`;
  document.getElementById("finance").innerHTML=html;
  ["solutionCost","energyCost","otherCapitalCost"].forEach(k=>document.getElementById(k).oninput=()=>{S[k]=+document.getElementById(k).value||0;S.capex=(S.solutionCost||0)+(S.energyCost||0)+(S.otherCapitalCost||0);save();render()});
- document.getElementById("rate").oninput=()=>{const el=document.getElementById("rate"); el.value=el.value.replace(/[^0-9.]/g,"").slice(0,5); S.rate=parseRateText(el.value)/100; save()};
-document.getElementById("rate").onblur=()=>{S.rate=parseRateText(document.getElementById("rate").value)/100; save(); render()};
+ document.getElementById("rate").oninput=()=>{const el=document.getElementById("rate"); let v=el.value.replace(/[^0-9.]/g,""); const first=v.indexOf("."); if(first>=0) v=v.slice(0,first+1)+v.slice(first+1).replace(/\./g,""); if(v.includes(".")){const [a,b]=v.split("."); v=(a||"").slice(0,2)+"."+(b||"").slice(0,2)} else v=v.slice(0,2); el.value=v; S.rate=parseRateText(v)/100; save()};
+document.getElementById("rate").onblur=()=>{const el=document.getElementById("rate"); S.rate=parseRateText(el.value)/100; el.value=rateText(S.rate*100); save(); render()};
 ["life","contribAvailable"].forEach(k=>document.getElementById(k).oninput=()=>{let v=+document.getElementById(k).value||0;if(k==="life")v=Math.min(99.99,Math.max(0.01,v));S[k]=v;save();render()});
  document.getElementById("maintPct").oninput=()=>{S.maintPct=Math.min(1,Math.max(0,(+document.getElementById("maintPct").value||0)/100));save();render()};
  ["subsidyPct","loanPct"].forEach(k=>document.getElementById(k).oninput=()=>{S[k]=Math.max(0,Math.min(1,(+document.getElementById(k).value||0)/100));save();render()});
@@ -558,7 +558,7 @@ function scenarioRows(){
  document.getElementById("customScenario").innerHTML=`
  <div class="field"><div><label>Subsidy %</label><span class="hint">Type any value</span></div><input id="cs" type="number" min="0" max="100" step=".01" inputmode="decimal" value="${(S.subsidyPct*100).toFixed(2).replace(/\.00$/,'')}"></div>
  <div class="field"><div><label>Bank loan %</label><span class="hint">Type any value</span></div><input id="cl" type="number" min="0" max="100" step=".01" inputmode="decimal" value="${(S.loanPct*100).toFixed(2).replace(/\.00$/,'')}"></div>
- <div class="field"><div><label>Interest % p.a.</label><span class="hint">Type any value</span></div><input id="cr" type="text" inputmode="decimal" maxlength="5" pattern="[0-9]{2}\.[0-9]{2}" value="${rateText(S.rate*100)}" placeholder="00.00"></div>
+ <div class="field"><div><label>Interest % p.a.</label><span class="hint">Enter as 00.00</span></div><input id="cr" class="numeric-input" type="text" inputmode="decimal" maxlength="5" pattern="[0-9]{2}\.[0-9]{2}" value="${rateText(S.rate*100)}" placeholder="00.00"></div>
  <div class="field"><div><label>Tenure (years)</label></div><input id="ct" type="number" min="0.01" max="99.99" step="0.01" inputmode="decimal" value="${Math.min(5,S.life)}"></div>
  <div class="callout" id="customOut"></div>`;
  const update=()=>{const sub=Math.max(0,Math.min(1,(+document.getElementById("cs").value||0)/100)), loanp=Math.max(0,Math.min(1,(+document.getElementById("cl").value||0)/100)), rate=Math.max(0,(+document.getElementById("cr").value||0)/100), years=+document.getElementById("ct").value||0, loan=S.capex*loanp, emi=loan>0?pmt(rate/S.cycles,years*S.cycles,loan):0;document.getElementById("customOut").innerHTML=`<strong>Result:</strong> Subsidy ${E(S.capex*sub)}, bank loan ${E(loan)}, beneficiary contribution ${E(Math.max(0,S.capex-S.capex*sub-loan))}, EMI ${E(emi)}. <b>${emi<=m.maxEmi&&years<=S.life?"Affordable under current repayment capacity.":"Not affordable under current repayment capacity."}</b>`};
