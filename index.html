@@ -544,43 +544,45 @@ function renderChecks(m){
 function customScenario(){
  const m=calc();
  document.getElementById("customScenario").innerHTML=`
- <div class="field"><div><label>Subsidy %</label><span class="hint">Type any value</span></div><input id="cs" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.subsidyPct*100).toFixed(2).replace(/\.00$/,'')}"></div>
- <div class="field"><div><label>Bank loan %</label><span class="hint">Type any value</span></div><input id="cl" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.loanPct*100).toFixed(2).replace(/\.00$/,'')}"></div>
- <div class="field"><div><label>Interest rate</label><span class="hint">Enter as 00.00</span></div><input id="cr" class="numeric-input" type="text" inputmode="decimal" maxlength="5" pattern="[0-9]{2}\.[0-9]{2}" value="${rateText(S.rate*100)}" placeholder="00.00"></div>
- <div class="field"><div><label>Tenure</label></div><input id="ct" type="number" min="0.01" max="99.99" step="0.01" inputmode="decimal" value="${S.life}"></div>
+ <div class="field"><div><label>Subsidy %</label><span class="hint">Choose the subsidy you prefer</span></div><input id="cs" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.subsidyPct*100).toFixed(2).replace(/\.00$/,'')}"></div>
+ <div class="field"><div><label>Bank loan %</label><span class="hint">Choose the share you prefer to finance through a bank</span></div><input id="cl" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.loanPct*100).toFixed(2).replace(/\.00$/,'')}"></div>
+ <div class="field"><div><label>Interest rate</label><span class="hint">Based on the rate entered on Page 1</span></div><input id="cr" class="numeric-input" type="text" inputmode="decimal" maxlength="5" value="${rateText(S.rate*100)}" readonly></div>
+ <div class="field"><div><label>Loan tenure</label><span class="hint">Choose the tenure you prefer</span></div><input id="ct" type="number" min="0.01" max="99.99" step="0.01" inputmode="decimal" value="${S.life}"></div>
  <div class="field"><div><label>Beneficiary contribution</label><span class="hint">Amount the end user prefers to contribute</span></div><input id="cc" type="number" min="0" max="999999999.99" step="0.01" inputmode="decimal" value="${S.contribAvailable||0}"></div>
  <div class="decision" id="customOut" style="margin-top:12px"></div>`;
  const update=()=>{
    const sub=Math.max(0,Math.min(1,(parseFloat(document.getElementById("cs").value)||0)/100));
    const loanp=Math.max(0,Math.min(1,(parseFloat(document.getElementById("cl").value)||0)/100));
-   const rate=Math.max(0,Math.min(.9999,(parseFloat(document.getElementById("cr").value)||0)/100));
    const years=Math.max(.01,Math.min(99.99,parseFloat(document.getElementById("ct").value)||0));
    const contrib=Math.max(0,parseFloat(document.getElementById("cc").value)||0);
+   const rate=S.rate;
    const subsidy=Math.min(S.capex*sub,S.capex), loan=Math.min(S.capex*loanp,Math.max(0,S.capex-subsidy)), self=Math.max(0,S.capex-subsidy-loan);
    const emi=loan>0?pmt(rate/S.cycles,years*S.cycles,loan):0;
    const affordable=emi<=m.maxEmi+0.01 && self<=contrib+0.01 && years<=S.life+0.0001;
-   document.getElementById("customOut").innerHTML=`<h3>${affordable?"This financing option is affordable":"This financing option is not affordable"}</h3><p>Subsidy: <strong>${E(subsidy)}</strong> · Bank loan: <strong>${E(loan)}</strong> · Contribution: <strong>${E(self)}</strong> · EMI: <strong>${E(emi)}</strong></p><p>${affordable?"The selected option is within the repayment capacity calculated on Page 1.":`The selected option exceeds the available repayment capacity, contribution, or allowable tenure.`}</p>`;
+   document.getElementById("customOut").innerHTML=`<h3>${affordable?"This financing option is affordable":"This financing option is not affordable"}</h3><p>Interest rate: <strong>${rateText(rate*100)}%</strong> · Subsidy: <strong>${E(subsidy)}</strong> · Bank loan: <strong>${E(loan)}</strong> · Contribution: <strong>${E(self)}</strong> · EMI: <strong>${E(emi)}</strong></p><p>${affordable?"The selected option is within the repayment capacity calculated on Page 1.":"The selected option exceeds the repayment capacity, contribution available, or allowable tenure."}</p>`;
  };
- ["cs","cl","cr","ct","cc"].forEach(id=>{const el=document.getElementById(id);el.oninput=update;el.onblur=update}); update();
+ ["cs","cl","ct","cc"].forEach(id=>{const el=document.getElementById(id);el.oninput=update;el.onblur=update}); update();
 }
 function analyzeScenarios(){
  const m=calc(), cap=S.capex, maxYears=Math.max(S.life,10);
- const assess=(sub,loanp,rate,years)=>{const subsidy=Math.min(cap*sub,cap), loan=Math.min(cap*loanp,Math.max(0,cap-subsidy)), self=Math.max(0,cap-subsidy-loan), emi=loan>0?pmt(rate/S.cycles,years*S.cycles,loan):0; return {subsidy,loan,self,emi,ok:emi<=m.maxEmi+0.01&&self<=S.contribAvailable+0.01&&years<=S.life+0.0001};};
- let minSub=null; for(let i=0;i<=200;i++){const sub=i/200; const a=assess(sub,S.loanPct,S.rate,S.life); if(a.ok){minSub={sub,a};break;}}
- let lowerRate=null; for(let i=0;i<=9999;i++){const rate=i/10000; const a=assess(S.subsidyPct,S.loanPct,rate,S.life); if(a.ok){lowerRate={rate,a};break;}}
- let maxLoan=null; for(let i=10000;i>=0;i--){const lp=i/10000; const a=assess(S.subsidyPct,lp,S.rate,S.life); if(a.ok){maxLoan={lp,a};break;}}
- let minTenure=null; for(let i=1;i<=Math.ceil(maxYears*100);i++){const yrs=i/100; const a=assess(S.subsidyPct,S.loanPct,S.rate,yrs); if(a.ok){minTenure={yrs,a};break;}}
- const rows=[
-  ["Current structure",S.subsidyPct,S.loanPct,S.rate,S.life,assess(S.subsidyPct,S.loanPct,S.rate,S.life)],
-  ["Minimum subsidy for affordability",minSub?.sub??null,S.loanPct,S.rate,S.life,minSub?.a],
-  ["Lower interest rate needed",S.subsidyPct,S.loanPct,lowerRate?.rate??null,S.life,lowerRate?.a],
-  ["Maximum bank loan share supported",S.subsidyPct,maxLoan?.lp??null,S.rate,S.life,maxLoan?.a],
-  ["Shortest tested affordable tenure",S.subsidyPct,S.loanPct,S.rate,minTenure?.yrs??null,minTenure?.a]
- ].filter(r=>r[5]);
- const html=`<div class="summary-grid"><div class="metric"><div class="label">Customer repayment capacity</div><div class="value">${E(m.maxEmi)}</div><div class="sub">Maximum affordable EMI</div></div><div class="metric"><div class="label">Current EMI</div><div class="value">${E(m.emi)}</div><div class="sub">Page 1 structure</div></div><div class="metric"><div class="label">Current affordability</div><div class="value">${m.within&&m.contributionGap<=0?"Affordable":"Not affordable"}</div><div class="sub">Based on repayment capacity</div></div></div>
- <div class="table-title">Financing support scenarios</div><div class="table-wrap"><table class="input-table"><thead><tr><th>Scenario</th><th>Subsidy %</th><th>Bank loan %</th><th>Interest %</th><th>Tenure</th><th>Subsidy</th><th>Loan</th><th>Contribution</th><th>EMI</th><th>Affordability</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]===null?"—":P(r[1])}</td><td>${r[2]===null?"—":P(r[2])}</td><td>${r[3]===null?"—":P(r[3])}</td><td>${r[4]===null?"—":r[4]}</td><td>${E(r[5].subsidy)}</td><td>${E(r[5].loan)}</td><td>${E(r[5].self)}</td><td>${E(r[5].emi)}</td><td><span class="tag ${r[5].ok?"pass":"fail"}">${r[5].ok?"Affordable":"Not affordable"}</span></td></tr>`).join("")}</tbody></table></div>
- <div class="callout" style="margin-top:12px"><strong>How to use this analysis:</strong> Compare the financing structures above with the customer's repayment capacity. The minimum subsidy scenario shows the lowest tested subsidy that meets the affordability and contribution constraints; the rate, loan-share and tenure scenarios show how those terms can be adjusted when the current structure is not affordable.</div>`;
- document.getElementById("veAnalysis").innerHTML=html;
+ document.getElementById("veAnalysis").innerHTML=`
+ <div class="field"><div><label>Subsidy %</label><span class="hint">Edit and explore</span></div><input id="vaSub" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.subsidyPct*100).toFixed(2).replace(/\.00$/,'')}"></div>
+ <div class="field"><div><label>Bank loan %</label><span class="hint">Edit and explore</span></div><input id="vaLoan" type="number" min="0" max="100" step="0.01" inputmode="decimal" value="${(S.loanPct*100).toFixed(2).replace(/\.00$/,'')}"></div>
+ <div class="field"><div><label>Interest rate %</label><span class="hint">Edit and explore</span></div><input id="vaRate" class="numeric-input" type="text" inputmode="decimal" maxlength="5" value="${rateText(S.rate*100)}" placeholder="00.00"></div>
+ <div class="field"><div><label>Loan tenure</label><span class="hint">Edit and explore</span></div><input id="vaTenure" type="number" min="0.01" max="99.99" step="0.01" inputmode="decimal" value="${S.life}"></div>
+ <div class="decision" id="veOut" style="margin-top:12px"></div>`;
+ const assess=()=>{
+   const sub=Math.max(0,Math.min(1,(parseFloat(document.getElementById("vaSub").value)||0)/100));
+   const loanp=Math.max(0,Math.min(1,(parseFloat(document.getElementById("vaLoan").value)||0)/100));
+   const rate=Math.max(0,Math.min(.9999,(parseFloat(document.getElementById("vaRate").value)||0)/100));
+   const years=Math.max(.01,Math.min(99.99,parseFloat(document.getElementById("vaTenure").value)||0));
+   const subsidy=Math.min(cap*sub,cap), loan=Math.min(cap*loanp,Math.max(0,cap-subsidy)), self=Math.max(0,cap-subsidy-loan);
+   const emi=loan>0?pmt(rate/S.cycles,years*S.cycles,loan):0;
+   const affordable=emi<=m.maxEmi+0.01 && self<=S.contribAvailable+0.01 && years<=S.life+0.0001;
+   let note=affordable?"This scenario is within the customer's repayment capacity.":"This scenario is not affordable under the customer's current repayment capacity.";
+   document.getElementById("veOut").innerHTML=`<h3>${affordable?"Scenario is affordable":"Scenario needs adjustment"}</h3><div class="summary-grid"><div class="metric"><div class="label">Customer repayment capacity</div><div class="value">${E(m.maxEmi)}</div><div class="sub">Maximum affordable EMI</div></div><div class="metric"><div class="label">Scenario EMI</div><div class="value">${E(emi)}</div><div class="sub">At selected terms</div></div><div class="metric"><div class="label">Subsidy</div><div class="value">${E(subsidy)}</div><div class="sub">${P(sub)} of solution cost</div></div><div class="metric"><div class="label">Bank loan</div><div class="value">${E(loan)}</div><div class="sub">${P(loanp)} of solution cost</div></div><div class="metric"><div class="label">Beneficiary contribution</div><div class="value">${E(self)}</div><div class="sub">Required under selected structure</div></div><div class="metric"><div class="label">Financing gap</div><div class="value">${E(Math.max(0,self-S.contribAvailable))}</div><div class="sub">Against contribution available</div></div></div><p style="margin-top:12px">${note}</p>`;
+ };
+ ["vaSub","vaLoan","vaRate","vaTenure"].forEach(id=>{const el=document.getElementById(id);el.oninput=assess;el.onblur=assess}); assess();
 }
 function exec(){
  const m=calc(), source=S.status==="Existing business"?"Additional profit generated by the existing business":"Only "+P(S.newRepayShare)+" of post-intervention profit";
