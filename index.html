@@ -398,7 +398,7 @@ function calc(){
  const within=loan<=0||emi<=maxEmi+0.01;
  let result="ENTER DATA";
  if(!S.status) result="SELECT BUSINESS STATUS";
- else if(!S.capex) result="ENTER REQUIRED DATA";
+ else if(!S.capex) result="PENDING ASSESSMENT";
  else if(capEmi>maxEmi+0.01 && loanCap>0) result="REVISE FINANCING";
  else result="FINANCING CAN BE CONSIDERED";
  return {preRev,postRev,preCost,postCost,preProfit,postProfit,improvement,repaymentBase,annual,maxEmi,subsidy,loanCap,affordableLoan,loan,self,emi,capEmi,within,contributionGap,result};
@@ -480,7 +480,7 @@ function buildOps(){
  document.querySelectorAll(".cost-post").forEach(e=>{e.oninput=()=>{S.costsPost[e.dataset.i]=parseFloat(e.value)||0;save()};e.onblur=()=>render()});
  const extraHost=document.getElementById("extraExpenseHost");
  if(extraHost){
-   extraHost.innerHTML=`<div class="table-title">${isNew?"Total monthly expenses":"Additional business expenses"}</div><div class="field"><div><label for="extraExpense">${isNew?"Total monthly expenses":"Additional business expenses"}</label><span class="u">${isNew?"Include family, medical and other essential expenses":"Any extra monthly expense caused by the solution / business"}</span></div><input id="extraExpense" type="number" min="0" max="999999999.99" step="0.01" inputmode="decimal" value="${isNew?S.newMonthlyExpenses:S.existingExtraExpenses}"></div>`;
+   extraHost.innerHTML=`<div class="table-title">${isNew?"Additional / household expenses":"Additional / business expenses"}</div><div class="field"><div><label for="extraExpense">${isNew?"Total monthly expenses":"Additional business expenses"}</label><span class="u">${isNew?"Include family, medical and other essential expenses":"Any extra monthly expense caused by the solution / business"}</span></div><input id="extraExpense" type="number" min="0" max="999999999.99" step="0.01" inputmode="decimal" value="${isNew?S.newMonthlyExpenses:S.existingExtraExpenses}"></div>`;
    document.getElementById("extraExpense").oninput=e=>{if(isNew)S.newMonthlyExpenses=parseFloat(e.target.value)||0;else S.existingExtraExpenses=parseFloat(e.target.value)||0;save()};
    document.getElementById("extraExpense").onblur=()=>render();
  }
@@ -594,7 +594,7 @@ document.getElementById("download").onclick=()=>{
  const m=calc(), rows=[
  ["Field","Value"],["Beneficiary",S.name],["Contact number",(S.phoneCountryCode||"+91")+" "+S.phone],["Business status",S.status],["Solution category",S.category],["Solution sub-category",S.subcategory],["Solution model",S.solution],["Official source reference",S.solutionSource],["Other solution",S.other],["Panel capacity",S.systemSpecs.panelCapacity],["Panel quantity",S.systemSpecs.panelQty],["Total PV capacity",S.systemSpecs.totalPvCapacity],["Battery capacity",S.systemSpecs.batteryCapacity],["Battery quantity",S.systemSpecs.batteryQty],["Inverter capacity",S.systemSpecs.inverterCapacity],["Controller / charge controller",S.systemSpecs.controller],["Pump / motor capacity",S.systemSpecs.pumpMotorCapacity],["Storage / tank capacity",S.systemSpecs.storageCapacity],["Main equipment capacity",S.systemSpecs.equipmentCapacity],["Mounting / installation",S.systemSpecs.mounting],["Wiring & protection",S.systemSpecs.wiringProtection],["Other technical specifications",S.systemSpecs.other],["Other equipment",S.equipment],["Pre revenue / month",m.preRev],["Post revenue / month",m.postRev],["Pre operating profit / month",m.preProfit],["Post operating profit / month",m.postProfit],["Profit improvement / month",m.improvement],["Repayment source",S.status==="Existing business"?"Additional operating profit":"80% of net available profit"],["Maximum affordable EMI",m.maxEmi],["Subsidy",m.subsidy],["Bank loan",m.loan],["Beneficiary contribution",m.self],["Estimated EMI",m.emi],["Result",m.result]];
  const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
- const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="G7H_VE_Selco_financing_assessment.csv";a.click();URL.revokeObjectURL(a.href)
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="Global_Hubs_Financial_Analysis_Assessment.csv";a.click();URL.revokeObjectURL(a.href)
 };
 document.getElementById("downloadBackend").onclick=()=>{
  const m=calc();
