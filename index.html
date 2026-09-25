@@ -264,7 +264,6 @@ svg{display:block;width:100%;height:auto}
 </div>
 <div class="main">
 <section class="panel"><div class="phead"><span class="sec">5</span><h2>Analysis & financing recommendation</h2></div><div class="pbody"><div class="summary-grid" id="metrics"></div><div class="decision" id="decision" style="margin-top:12px"></div></div></section>
-<section class="panel"><div class="phead"><span class="sec">6</span><h2>What the field team should take forward</h2></div><div class="pbody" id="checks"></div></section>
 </div>
 </div>
 </section>
@@ -530,17 +529,6 @@ function renderMetrics(m){
  document.getElementById("verdict").className="verdict "+(m.result==="FINANCING CAN BE CONSIDERED"?"is-go":m.result==="REVISE FINANCING"?"is-cond":"is-data");
  document.getElementById("chips").innerHTML=`<span class="chip">${S.status||"Business status pending"}</span><span class="chip">${S.solution||"Solution pending"}</span><span class="chip">EMI capacity ${E(m.maxEmi)}</span>`;
 }
-function renderChecks(m){
- const answered=S.elig.every(x=>x!==null), yes=S.elig.filter(x=>x===true).length;
- const items=[
- ["Field completeness",!!S.status&&!!S.capex&&answered,`Business status, solution cost and readiness questions are required.`],
- ["Existing-business logic",S.status!=="Existing business"||m.improvement>0,`Existing business must show a positive operating-profit improvement after the intervention.`],
- ["New-business livelihood protection",S.status!=="New business"||m.postProfit>0,`New business should have positive post-intervention operating profit before financing.`],
- ["Repayment capacity",m.maxEmi>0,`Stress haircut of ${P(S.stress)} and DSCR of ${S.dscr.toFixed(2)} are applied automatically.`],
- ["Contribution",m.contributionGap<=0, m.contributionGap<=0?"Available contribution covers the calculated balance.":`Short by ${E(m.contributionGap)}.`]
- ];
- document.getElementById("checks").innerHTML=items.map(x=>`<div class="check"><span class="tag ${x[1]?"pass":"fail"}">${x[1]?"OK":"CHECK"}</span><div><b>${x[0]}</b><div>${x[2]}</div></div></div>`).join("");
-}
 function customScenario(){
  const m=calc();
  document.getElementById("customScenario").innerHTML=`
@@ -597,7 +585,7 @@ function exec(){
  <div class="decision" style="margin-top:14px"><h3>Financing structure</h3><p>Solution cost: <strong>${E(S.capex)}</strong></p><p>Programme subsidy: <strong>${E(m.subsidy)}</strong> · Bank loan: <strong>${E(m.loan)}</strong> · Beneficiary contribution: <strong>${E(m.self)}</strong></p><p>Repayment source: <strong>${source}</strong></p><p>Conclusion: <strong>${m.result}</strong></p></div>`;
 }
 function save(){localStorage.setItem("g7h-finance-state",JSON.stringify(S))}
-function render(){buildBio();buildElig();buildOps();buildFinance();const m=calc();renderMetrics(m);renderChecks(m);customScenario();analyzeScenarios();exec()}
+function render(){buildBio();buildElig();buildOps();buildFinance();const m=calc();renderMetrics(m);customScenario();analyzeScenarios();exec()}
 function tab(which){["a","s","v","e"].forEach(x=>{document.getElementById("pane-"+x).hidden=x!==which;document.getElementById("tab-"+x).setAttribute("aria-selected",x===which)})}
 document.getElementById("tab-a").onclick=()=>tab("a");document.getElementById("tab-s").onclick=()=>tab("s");document.getElementById("tab-v").onclick=()=>tab("v");document.getElementById("tab-e").onclick=()=>tab("e");
 document.getElementById("print").onclick=()=>window.print();
