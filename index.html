@@ -410,7 +410,7 @@ function fld(key,label,opts={}){
  `<input id="f-${key}" type="${opts.type||"text"}" value="${esc(v)}" ${opts.step?`step="${opts.step}"`:""}>`;
  return `<div class="field ${opts.wide?"wide":""}"><div><label for="f-${key}">${esc(label)}</label>${opts.hint?`<span class="u">${esc(opts.hint)}</span>`:""}</div>${control}</div>`;
 }
-function bind(key,conv=x=>x){const el=document.getElementById("f-"+key);if(!el)return;el.addEventListener("input",()=>{S[key]=conv(el.value);save();render()});el.addEventListener("change",()=>{S[key]=conv(el.value);save();render()})}
+function bind(key,conv=x=>x){const el=document.getElementById("f-"+key);if(!el)return;el.addEventListener("input",()=>{S[key]=conv(el.value);save()});el.addEventListener("change",()=>{S[key]=conv(el.value);save();render()})}
 function solutionOptions(category){return Object.keys(SOLUTION_MASTER[category]?.subcategories||{});}
 function modelOptions(category,sub){return (SOLUTION_MASTER[category]?.subcategories?.[sub]||[]).map(x=>x.name);}
 function selectHtml(id,value,options,placeholder="— choose —",disabled=false){
@@ -454,7 +454,7 @@ function buildBio(){
  fld("location","Location",{wide:true})+`<div class="field"><div><label>Contact number</label><span class="u">Select country code; enter digits only</span></div><div class="phone-group"><select id="phoneCountry"><option value="+91" ${S.phoneCountryCode==="+91"?"selected":""}>India +91</option><option value="+1" ${S.phoneCountryCode==="+1"?"selected":""}>USA/Canada +1</option><option value="+44" ${S.phoneCountryCode==="+44"?"selected":""}>UK +44</option><option value="+254" ${S.phoneCountryCode==="+254"?"selected":""}>Kenya +254</option><option value="+251" ${S.phoneCountryCode==="+251"?"selected":""}>Ethiopia +251</option><option value="+255" ${S.phoneCountryCode==="+255"?"selected":""}>Tanzania +255</option><option value="+256" ${S.phoneCountryCode==="+256"?"selected":""}>Uganda +256</option><option value="+234" ${S.phoneCountryCode==="+234"?"selected":""}>Nigeria +234</option><option value="+27" ${S.phoneCountryCode==="+27"?"selected":""}>South Africa +27</option><option value="+971" ${S.phoneCountryCode==="+971"?"selected":""}>UAE +971</option></select><input id="f-phone" type="tel" inputmode="numeric" maxlength="15" value="${esc(S.phone)}" placeholder="Mobile number"></div></div>`+fld("date","Date of assessment",{type:"date"})+fld("officer","Assessed by");
  ["name","status","other","equipment","location","date","officer"].forEach(k=>bind(k));
  const pc=document.getElementById("phoneCountry"), ph=document.getElementById("f-phone");
- pc.onchange=()=>{S.phoneCountryCode=pc.value;save();render()}; ph.oninput=()=>{S.phone=ph.value.replace(/\D/g,"");save();render()};
+ pc.onchange=()=>{S.phoneCountryCode=pc.value;save()}; ph.oninput=()=>{S.phone=ph.value.replace(/\D/g,"");save()}; ph.onchange=()=>{S.phone=ph.value.replace(/\D/g,"");save();render()};
  bindSolutionSelectors();
  document.querySelectorAll("[data-spec]").forEach(el=>el.addEventListener("input",()=>{S.systemSpecs[el.dataset.spec]=el.value;save()}));
 }
